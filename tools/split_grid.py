@@ -16,6 +16,11 @@ img/PROMPT.md のプロンプトで出したグリッド画像（白背景、コ
 
     python3 tools/split_grid.py grid.png --out img --size 512
     python3 tools/split_grid.py grid.png --only 5      # 5番だけ描き直したとき
+    python3 tools/split_grid.py grid.png --bold 5      # 線が細すぎたとき太らせる
+
+札の中で絵が出るのは幅40pxほどしかないので、書き出しながら「実寸での黒の割合」を
+表示します。20%を下回ると灰色の塊になって何か分からなくなるので、そのときは
+--bold で線を太らせるか、絵を描き直してください。
 
 札は白背景のままでも mix-blend-mode: multiply で地色に抜けるので、
 透過は必須ではありません。手で9分割して 1.png〜9.png と名前を付けても動きます。
@@ -28,7 +33,7 @@ import os
 import argparse
 from collections import deque
 
-from PIL import Image
+from PIL import Image, ImageFilter
 import numpy as np
 
 SIZE = 512          # 出力の一辺
@@ -141,6 +146,15 @@ def drop_background(cell):
     return Image.fromarray(out, 'RGBA')
 
 
+def ink_ratio(im, px=38):
+    """札の中の実寸まで落としたときに、黒がどれだけ残るか。"""
+    flat = Image.new('RGB', im.size, (255, 255, 255))
+    flat.paste(im, (0, 0), im)
+    small = flat.resize((px, px), Image.LANCZOS).convert('L')
+    dark = sum(small.histogram()[:140])          # 140未満を「黒」とみなす
+    return dark / float(px * px)
+
+
 def square(im):
     """中身で切りつめて、透明の余白で正方形にし、512pxに揃える。"""
     bbox = im.split()[-1].point(lambda v: 255 if v > 8 else 0).getbbox()
@@ -159,6 +173,8 @@ def main(argv):
     ap.add_argument('--size', type=int, default=SIZE, help='出力の一辺（既定: 512）')
     ap.add_argument('--only', type=int, nargs='*', metavar='N',
                     help='この番号だけ書き出す（例: --only 5 9）')
+    ap.add_argument('--bold', type=int, default=0, metavar='N',
+                    help='線を太らせる量。細い輪郭線だけの絵を救う（3か5。既定: 0＝そのまま）')
     a = ap.parse_args(argv)
 
     os.makedirs(a.out, exist_ok=True)
@@ -174,11 +190,15 @@ def main(argv):
         if i not in want:
             continue
         path = os.path.join(a.out, '{}.png'.format(i))
+        if a.bold:
+            cell = cell.filter(ImageFilter.MinFilter(a.bold | 1))
         im = square(drop_background(cell))
         if a.size != SIZE:
             im = im.resize((a.size, a.size), Image.LANCZOS)
         im.save(path, optimize=True)
-        print('wrote', path, STAGE[i])
+        ink = ink_ratio(im)
+        note = '  ← 薄い。--bold か描き直しを' if ink < 0.20 else ''
+        print('wrote {} {}  実寸での黒 {:.0f}%{}'.format(path, STAGE[i], ink * 100, note))
     return 0
 
 
