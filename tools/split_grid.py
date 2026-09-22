@@ -5,7 +5,7 @@ img/PROMPT.md のプロンプトで出したグリッド画像（白背景、コ
 
   1. 区切り線を自動で見つけて9コマに切り分け
   2. 外側とつながっている白を塗りつぶして透過（絵の内側の白は残す）
-  3. 中身の外周で切りつめ、正方形に余白を足して 512x512 に統一
+  3. 中身の外周で切りつめ、正方形に余白を足して 256x256 に統一
 
 したPNGを img/ に書き出します。コマの順番は左上から右へ、上の段から。
 
@@ -14,7 +14,7 @@ img/PROMPT.md のプロンプトで出したグリッド画像（白背景、コ
     pip install pillow numpy
     python3 tools/split_grid.py grid.png
 
-    python3 tools/split_grid.py grid.png --out img --size 512
+    python3 tools/split_grid.py grid.png --out img --size 256
     python3 tools/split_grid.py grid.png --only 5      # 5番だけ描き直したとき
     python3 tools/split_grid.py grid.png --bold 5      # 線が細すぎたとき太らせる
 
@@ -36,7 +36,7 @@ from collections import deque
 from PIL import Image, ImageFilter
 import numpy as np
 
-SIZE = 512          # 出力の一辺
+SIZE = 256          # 出力の一辺。札で出るのは最大42pxなので、3倍の画面でもこれで足りる
 STAGE = ['', '樹上のサル', '火のボノボ', '直立二足歩行', '石器', 'ゴリラ',
          '言語', '農耕', '文字と都市', '現生人類']
 PAD_RATIO = 0.04    # 正方形化したあとに足す余白の比率
@@ -170,7 +170,7 @@ def main(argv):
     ap = argparse.ArgumentParser(description='グリッド画像を img/1.png〜9.png に切り分ける')
     ap.add_argument('grid', help='画像生成AIが出した 3x3 のグリッド画像')
     ap.add_argument('--out', default='img', help='書き出し先（既定: img）')
-    ap.add_argument('--size', type=int, default=SIZE, help='出力の一辺（既定: 512）')
+    ap.add_argument('--size', type=int, default=SIZE, help='出力の一辺（既定: 256）')
     ap.add_argument('--only', type=int, nargs='*', metavar='N',
                     help='この番号だけ書き出す（例: --only 5 9）')
     ap.add_argument('--bold', type=int, default=0, metavar='N',
