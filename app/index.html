@@ -449,6 +449,7 @@ function startHand(){
   G.phase = "draw";
   G.drawn = null;
   G.over = false;
+  G.lastSheet = null;
   G.log = [];
   log("第" + G.hand + "局。" + (G.cur==="you"?"あなた":"CPU") + "の先手。", "hot");
   render();
@@ -618,7 +619,16 @@ function render(){
   // 操作と案内
   var act = $("actions"); act.innerHTML = "";
   var hint = $("hint"); hint.innerHTML = "";
-  if (G.over){ renderLog(); return; }
+  if (G.over){
+    // 結果画面を閉じたままでも、次へ進む道と見直す道を盤面に残す
+    if (G.lastSheet && $("modal").hidden){
+      act.appendChild(mkBtn(G.lastSheet.matchOver ? "もう一度、最初から" : "次の局へ", "",
+                            advanceFromSheet));
+      act.appendChild(mkBtn("結果をもう一度見る", "ghost", function(){ showSheet(G.lastSheet); }));
+      hint.textContent = G.lastSheet.matchOver ? "決着しました。" : "この局は終わりました。";
+    }
+    renderLog(); return;
+  }
 
   if (G.cur === "cpu"){
     hint.textContent = "CPUの手番…";
@@ -931,8 +941,25 @@ function settleDraw(){
   }, 550);
 }
 
+/* 結果画面を閉じる。盤面側に進む手立てを出し直したいので、必ず描き直す。 */
+function closeModal(){
+  $("modal").hidden = true;
+  if (G) render();
+}
+
+/* 結果画面の主ボタン。次の局へ、決着していれば最初から。 */
+function advanceFromSheet(){
+  $("modal").hidden = true;
+  var r = G.lastSheet;
+  G.lastSheet = null;
+  if (r && r.matchOver) { newMatch(); return; }
+  G.hand++; G.first = other(G.first); startHand();
+}
+
 function showSheet(r){
   var over = (G.score.you >= GOAL || G.score.cpu >= GOAL);
+  r.matchOver = over;
+  G.lastSheet = r;
   var s = $("sheet"), h = "";
 
   if (over){
@@ -997,14 +1024,10 @@ function showSheet(r){
   var b1 = document.createElement("button");
   b1.className = "bigbtn"; b1.type="button";
   b1.textContent = over ? "もう一度、最初から" : "次の局へ";
-  b1.addEventListener("click", function(){
-    $("modal").hidden = true;
-    if (over) newMatch();
-    else { G.hand++; G.first = other(G.first); startHand(); }
-  });
+  b1.addEventListener("click", advanceFromSheet);
   var b2 = document.createElement("button");
   b2.className = "bigbtn ghost"; b2.type="button"; b2.textContent = "盤面を見る";
-  b2.addEventListener("click", function(){ $("modal").hidden = true; });
+  b2.addEventListener("click", closeModal);
   foot.appendChild(b1); foot.appendChild(b2);
   s.appendChild(foot);
   $("modal").hidden = false;
@@ -1062,7 +1085,7 @@ function showRules(){
 
     '<div class="sheetfoot"><button class="bigbtn" id="closeBtn">盤面に戻る</button></div>';
   $("modal").hidden = false;
-  $("closeBtn").addEventListener("click", function(){ $("modal").hidden = true; });
+  $("closeBtn").addEventListener("click", closeModal);
 }
 
 /* ══ 入力・起動 ════════════════════════════════════════ */
@@ -1070,7 +1093,7 @@ $("rulesBtn").addEventListener("click", showRules);
 $("resetBtn").addEventListener("click", function(){ $("modal").hidden=true; newMatch(); });
 $("diffSel").addEventListener("change", function(){ $("modal").hidden=true; newMatch(this.value); });
 document.addEventListener("keydown", function(e){
-  if (e.key === "Escape" && !$("modal").hidden) $("modal").hidden = true;
+  if (e.key === "Escape" && !$("modal").hidden) closeModal();
 });
 
 /* 絵の有無を1枚だけ試す。無ければ文字だけの札のまま動く。 */
