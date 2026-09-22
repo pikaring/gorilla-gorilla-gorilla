@@ -97,8 +97,10 @@
     color:var(--ink); background:var(--banana); border-radius:2px; padding:0 3px}
   .card .apeart{position:absolute; right:4px; bottom:19px; opacity:.85}
   /* 絵札 — img/1.png … img/9.png を置くと自動で切り替わる */
-  .card .art{display:block; width:100%; height:38px; object-fit:contain; margin-top:1px;
-    mix-blend-mode:multiply; pointer-events:none}
+  /* 絵は伸び縮みさせる。高さを固定すると、狭い画面で段名の場所が残らず切れる。
+     min-height:0 で縮めるようにし、文字側は内容ぶんの高さを保つ。 */
+  .card .art{display:block; width:100%; flex:1 1 auto; min-height:0; max-height:38px;
+    object-fit:contain; margin-top:1px; mix-blend-mode:multiply; pointer-events:none}
   .card.arton .band{height:12px}
   /* 絵にすると大陸名の行が消えるので、色帯の中に入れて残す */
   .card.arton .cont{position:absolute; top:0; left:0; right:0; height:12px; line-height:12px;
@@ -107,7 +109,7 @@
   .card.sm.arton .cont{display:none}
   .card.arton .apeart{display:none}
   .card.arton .num{font-size:25px; padding-top:5px}
-  .card.sm .art{height:22px}
+  .card.sm .art{max-height:22px}
   .card.sm.arton .band{height:6px}
   .card.sm.arton .num{font-size:16px; padding-top:3px}
   .card.sm{width:42px;height:60px}
@@ -176,6 +178,8 @@
     .card .num{font-size:24px;padding:5px 0 0 6px}
     .card .stage{font-size:7.5px;padding:0 5px}
     .card .cont{font-size:7px;padding:0 6px}
+    .card.arton .band{height:10px}
+    .card.arton .num{font-size:21px; padding-top:3px}
     .deckback,.emptyslot{width:56px;height:80px}
     .tablerow{gap:12px}
     .recent{display:none}
@@ -504,7 +508,7 @@ function cardNode(card, opt){
 
   var st = document.createElement("div");
   st.className = "stage";
-  st.textContent = card.kind === "rainbow" ? "萬能" : STAGE[card.n];
+  st.textContent = card.kind === "rainbow" ? "万能" : STAGE[card.n];
   el.appendChild(st);
 
   if (isApe(card)){
@@ -640,8 +644,7 @@ function render(){
   } else {
     var w = winOption(G.you.hand, G.you.melds.length);
     if (w){
-      var lab = G.drawnFrom === "discard" ? "ゴリラ！" : "ツモ";
-      act.appendChild(mkBtn(lab, "win", function(){ declareWin("you", w); }));
+      act.appendChild(mkBtn("ゴリラ！", "win", function(){ declareWin("you", w); }));
     }
     var k = knockOption(G.you);
     if (k){
@@ -882,8 +885,9 @@ function declareWin(who, w){
   var gained = lp.dead + bonus;
   G.score[who] += gained;
 
-  var call = G.drawnFrom === "discard" ? "ゴリラ！" : "ツモ";
-  log(nameOf(who) + "が" + call + "で上がった。" + nameOf(loser) + "の伏せ札 " + lp.dead + "点" +
+  var call = "ゴリラ！";
+  var how = G.drawnFrom === "discard" ? "捨て札を拾って" : "山札から引いて";
+  log(nameOf(who) + "が" + how + call + " " + nameOf(loser) + "の伏せ札 " + lp.dead + "点" +
       (bonus ? "＋現生人類 " + bonus + "点" : "") + " を獲得。",
       who==="you" ? "hot" : "bad");
   render();
@@ -1058,7 +1062,7 @@ function showRules(){
     '<h3>手番</h3>' +
     '<p>山札か捨て札の一番上か、どちらかから1枚引いて、1枚捨てる。ポン・チーはありません。' +
     '<strong>捨て札を拾った手番は山札が減らない</strong>ので、拾うほど局が延びます。</p>' +
-    '<p>2人なので、自分の手番が来たときの捨て札は必ず相手が直前に捨てた札です。つまり<strong>それを拾って上がれば実質のロン</strong>——そのとき叫ぶのが「ゴリラ！」。山札から引いて上がれば「ツモ」。</p>' +
+    '<p>2人なので、自分の手番が来たときの捨て札は必ず相手が直前に捨てた札です。つまり<strong>それを拾って上がれば実質のロン</strong>。山札から引いても捨て札を拾っても、上がりの宣言は<strong>「ゴリラ！」</strong>です。</p>' +
 
     '<h3>公開</h3>' +
     '<p>揃った組は自分の手番に公開できます。<strong>公開した組は精算で0点</strong>、伏せたままだと札の点がそのまま失点になる。</p>' +

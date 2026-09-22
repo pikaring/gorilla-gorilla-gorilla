@@ -244,7 +244,7 @@ details p { margin-top: 12px; font-size: 15px; padding-left: 24px; }
    iOS Safari が 本来の 高さの まま 置いて しまい、縦横比が 崩れる。
    念のため aspect-ratio でも 比率を 固定して おく。 */
 .screen-shot { display: block; padding: 0; min-height: 0; background: #151917; }
-.screen-shot img { display: block; width: 100%; height: auto; aspect-ratio: 600 / 1067; }
+.screen-shot img { display: block; width: 100%; height: auto; aspect-ratio: 600 / 1052; }
 
 /* ---- このサイトの 題は 長い（15字）ので、狭い画面での ヘッダー ----
    そのままだと 題が 2行に なり、「あそぶ」の ボタンが 潰れて 縦書きに なる。 */
