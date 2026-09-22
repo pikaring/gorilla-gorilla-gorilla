@@ -106,6 +106,7 @@
 
   footer{margin-top:54px; padding-top:18px; border-top:1px solid var(--line);
     font-size:12px; color:var(--muted); display:flex; gap:14px; flex-wrap:wrap}
+  footer .counter b{color:var(--fg); font-weight:600; font-variant-numeric:tabular-nums}
 
   @media (max-width:520px){ nav{gap:10px} nav a{font-size:11.5px} }
 </style>
@@ -332,8 +333,23 @@
     <a href="app/index.html">あそぶ</a>
     <a href="https://pikaring.github.io/guns-germs-and-diamond/">銃・病原菌・ダイヤモンド</a>
     <a href="https://isonotakami.hatenadiary.jp/archive/category/%E7%AC%AC%E4%B8%89%E3%81%AE%E3%82%B4%E3%83%AA%E3%83%A9">原作「第三のゴリラ」</a>
+    <a href="https://pikaring.github.io/">ほかのツール</a>
+    <span class="counter">累計アクセス <b id="counter-value">―</b> 回</span>
   </footer>
 </div>
+
+<script>
+  // アクセスカウンター（ツール群で共通のGAS。page名でサイトごとに別カウント）
+  (function () {
+    var el = document.getElementById('counter-value');
+    if (!el) return;
+    var page = location.pathname.replace(/index\.html$/, '');
+    fetch('https://script.google.com/macros/s/AKfycbxkQLZXNAFXkT7zhIO0TmMDGU3A0TQ234Lf-yhw5J7lvFAjCi3KLNLRd_LKd_xlOxPd/exec?page=' + encodeURIComponent(page))
+      .then(function (r) { return r.json(); })
+      .then(function (d) { el.textContent = Number(d.count).toLocaleString('ja-JP'); })
+      .catch(function () { el.textContent = '―'; });
+  })();
+</script>
 
 <script>
   /* img/5.png があれば見本札も絵に差し替える */
