@@ -240,5 +240,15 @@ details p { margin-top: 12px; font-size: 15px; padding-left: 24px; }
 /* ========== ヒーローの画面（このゲーム用） ==========
    手で組んだ模型ではなく、app/index.html を 390px幅で 撮った 実物。
    撮り直すときは tools/make_screen.mjs を 走らせる。 */
-.screen-shot { padding: 0; min-height: 0; gap: 0; background: #151917; }
-.screen-shot img { display: block; width: 100%; height: auto; }
+/* 画像は フレックスの 子に しない。縦方向フレックスの 中の img は、
+   iOS Safari が 本来の 高さの まま 置いて しまい、縦横比が 崩れる。
+   念のため aspect-ratio でも 比率を 固定して おく。 */
+.screen-shot { display: block; padding: 0; min-height: 0; background: #151917; }
+.screen-shot img { display: block; width: 100%; height: auto; aspect-ratio: 600 / 1067; }
+
+/* ---- このサイトの 題は 長い（15字）ので、狭い画面での ヘッダー ----
+   そのままだと 題が 2行に なり、「あそぶ」の ボタンが 潰れて 縦書きに なる。 */
+@media (max-width: 560px) {
+  .header .brand { font-size: 14px; letter-spacing: 0; }
+  .nav .btn-main { white-space: nowrap; }
+}
