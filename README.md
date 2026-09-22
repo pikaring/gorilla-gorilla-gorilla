@@ -14,9 +14,11 @@
 
 ## 構成
 
-    index.html      紹介ページ
-    app/index.html  ゲーム本体（単体で動く）
-    img/            札の絵。1.png〜9.png を置くと自動で切り替わる
+    index.html            紹介ページ
+    app/index.html        ゲーム本体（単体で動く）
+    img/                  札の絵。1.png〜9.png を置くと自動で切り替わる
+    img/PROMPT.md         絵を作るためのプロンプト（3x3グリッドで一度に出させる）
+    tools/split_grid.py   そのグリッド画像を 1.png〜9.png に切り分ける
 
 ## 札 — 38枚
 
@@ -91,4 +93,10 @@
 
 `img/` に `1.png`〜`9.png` を置くと自動で絵に切り替わる。無ければ文字だけの札で動く。
 大陸は色帯で表しているので絵は段ごとの9枚で足り、**絵に色を持たせない**ことが条件。
-生成用のプロンプトは [`img/PROMPT.md`](img/PROMPT.md)。
+
+9枚は **3x3のグリッド画像1枚** として一度に生成させ、切り分ける。1枚ずつ作るより画風が揃う。
+
+    python3 tools/split_grid.py grid.png
+
+プロンプトは [`img/PROMPT.md`](img/PROMPT.md)。切り分けは
+guns-germs-and-diamond の `tools/make_cards.py` を単純化したもの。
