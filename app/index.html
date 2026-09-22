@@ -624,7 +624,8 @@ function render(){
     hint.textContent = "CPUの手番…";
   } else if (G.phase === "draw"){
     act.appendChild(mkBtn("山札から引く", "", function(){ playerDraw("deck"); }));
-    if (top) act.appendChild(mkBtn("捨て札の " + cardName(top) + " を拾う", "ghost", function(){ playerDraw("discard"); }));
+    // 拾う札は場に出ているので、ボタンに名前を繰り返さない（操作行が1行に収まる）
+    if (top) act.appendChild(mkBtn("捨て札を拾う", "ghost", function(){ playerDraw("discard"); }));
     hint.innerHTML = "山札か捨て札か、どちらから1枚引く。<em>捨て札を拾うと山札は減らない</em>ので局が延びます。";
   } else {
     var w = winOption(G.you.hand, G.you.melds.length);
