@@ -1,3 +1,8 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>若い類人猿のための第三のゴリラ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,8 +19,14 @@
     --body:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP",sans-serif;
     --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
     color-scheme:dark;
+    padding-top:env(safe-area-inset-top, 0px);
+    padding-bottom:env(safe-area-inset-bottom, 0px);
   }
   *{box-sizing:border-box}
+  /* 単体配信（GitHub Pages）では骨組みが付かないので、自前で持つ。
+     作者スタイルはブラウザ標準の [hidden]{display:none} に勝つため、!important が要る。 */
+  [hidden]{display:none!important}
+  img{max-width:100%}
   body{margin:0; background:var(--bg); color:var(--fg); font-family:var(--body); font-size:15px; line-height:1.5;
     -webkit-text-size-adjust:100%;
     background-image:radial-gradient(120% 70% at 50% -10%, #232b28 0%, rgba(21,25,23,0) 60%)}
@@ -171,7 +182,8 @@
   }
   @media (prefers-reduced-motion:reduce){ *{animation-duration:.01ms!important; transition-duration:.01ms!important} }
 </style>
-
+</head>
+<body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="ape" viewBox="0 0 100 100">
   <circle cx="16" cy="45" r="11.5"/><circle cx="84" cy="45" r="11.5"/>
   <ellipse cx="50" cy="48" rx="31" ry="35"/>
@@ -958,3 +970,5 @@ try{
 
 })();
 </script>
+</body>
+</html>
