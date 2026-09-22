@@ -332,6 +332,10 @@ function findMelds(cards){
 
 function deadOf(cards){ var s=0; cards.forEach(function(c){ s+=points(c); }); return s; }
 
+/* 精算。伏せ札は完成した組であっても額面どおりに数える。
+   0点にできるのは公開した組だけ——これが公開する利点そのもの。 */
+function settleOf(P){ return { dead: deadOf(P.hand), rest: P.hand.slice() }; }
+
 /* 手の内を「最大数の組 → 最小の失点」で分解する */
 function bestPartition(cards, maxMelds){
   if (maxMelds === undefined) maxMelds = 3;
@@ -377,7 +381,10 @@ function winOption(hand, exposed){
 
 /* 伏せたまま晒せる組（レインボーを含まないもの）を列挙 */
 function exposableMelds(hand, exposed){
-  if (exposed >= 3) return [];
+  // 3組目は公開させない。公開できる組が手の内にある状態は、
+  // 余りの1枚を捨てれば上がれる状態と同じなので、上がり宣言のほうを使う。
+  // ここで公開を許すと公開組が3になり、上がり判定の前提から外れて上がれなくなる。
+  if (exposed >= 2) return [];
   var seen = {}, out = [];
   findMelds(hand).forEach(function(m){
     if (m.wild) return;
@@ -514,7 +521,7 @@ function render(){
   var fan = $("cpuFan"); fan.innerHTML = "";
   for (var i=0;i<G.cpu.hand.length;i++) fan.appendChild(document.createElement("i"));
 
-  var youDead = bestPartition(G.you.hand, 3 - G.you.melds.length).dead;
+  var youDead = deadOf(G.you.hand);
   $("youDead").textContent = youDead;
 
   renderMeldRow($("cpuMelds"), G.cpu.melds);
@@ -751,14 +758,18 @@ function cpuTurn(){
     var w = winOption(G.cpu.hand, G.cpu.melds.length);
     if (w){ declareWin("cpu", w); return; }
 
-    // 公開するか — 公開の唯一の利点は「相手に先に上がられたときの保険」
-    var risk = (G.you.melds.length >= 2 ? 3 : G.you.melds.length) +
-               (G.deck.length <= 6 ? 3 : 0) +
+    // 公開するか。手の内を晒す代わりに、先に上がられてもその組が失点にならない。
+    // 相手が近いほど、また組が重いほど、公開する価値が上がる。
+    var risk = (G.you.melds.length >= 2 ? 4 : G.you.melds.length * 2) +
+               (G.deck.length <= 6 ? 3 : (G.deck.length <= 12 ? 1 : 0)) +
                (G.picks.you.length >= 3 ? 1 : 0);
-    if (risk >= 3 || Math.random() < d.exposeEarly){
-      var opts = exposableMelds(G.cpu.hand, G.cpu.melds.length);
-      if (opts.length){
-        var m = opts[0];
+    var opts = exposableMelds(G.cpu.hand, G.cpu.melds.length);
+    if (opts.length){
+      // いちばん重い組から公開する（守る価値が大きい）
+      opts.sort(function(a, b){ return deadOf(b.cards) - deadOf(a.cards); });
+      var m = opts[0];
+      var worth = risk + deadOf(m.cards) / 6;
+      if (worth >= 3 || Math.random() < d.exposeEarly){
         expose(G.cpu, m);
         log("CPUが " + meldName(m) + " を公開した。", "cpu");
         render();
@@ -792,7 +803,7 @@ function declareWin(who, w){
   w.melds.forEach(function(m){ expose(G[who], m); });
 
   var loser = other(who);
-  var lp = bestPartition(G[loser].hand, 3 - G[loser].melds.length);
+  var lp = settleOf(G[loser]);
   var gained = lp.dead;
   G.score[who] += gained;
 
@@ -807,8 +818,8 @@ function settleDraw(){
   if (G.over) return;
   G.over = true;
   clearTimers();
-  var yp = bestPartition(G.you.hand, 3 - G.you.melds.length);
-  var cp = bestPartition(G.cpu.hand, 3 - G.cpu.melds.length);
+  var yp = settleOf(G.you);
+  var cp = settleOf(G.cpu);
   var winner = null, gained = 0;
   if (yp.dead < cp.dead){ winner = "you"; gained = cp.dead - yp.dead; }
   else if (cp.dead < yp.dead){ winner = "cpu"; gained = yp.dead - cp.dead; }
@@ -920,6 +931,7 @@ function showRules(){
     '<p>揃った組は自分の手番に公開できます。<strong>公開した組は精算で0点</strong>、伏せたままだと札の点がそのまま失点になる。</p>' +
     '<p>では常に公開すべきかというと、そうではありません。公開は<strong>手の内を相手に教える</strong>——残り何組かが見えるので、相手は危険な札を止め、こちらの上がりは遠のきます。公開の唯一の利点は<strong>相手に先に上がられたときの保険</strong>。相手が近づいたと見たら公開する、まだ遠いなら伏せて粘る。その読み合いです。</p>' +
     '<p><strong>レインボーゴリラを使った組は、上がるまで公開できません。</strong>組は一気に埋まりますが、上がれなければその3枚は必ず失点として残る——勝負手専用の札です。1つの組に使えるのは1枚まで。</p>' +
+    '<p class="sub">3組目は公開できません。そこまで揃ったなら、余りの1枚を捨てて上がれるからです。</p>' +
 
     '<h3>精算</h3>' +
     '<ul>' +
