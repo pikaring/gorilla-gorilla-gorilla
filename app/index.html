@@ -261,6 +261,8 @@ var STAGE = ["","樹上のサル","火のボノボ","直立二足歩行","石器
 var APE_RANK = 5;      // ゴリラが座る段
 var APE_PEN  = 10;     // ゴリラの罰点
 var GOAL     = 100;    // この点に達したら勝ち
+var KNOCK_MAX  = 10;   // ゴリラ宣言できる伏せ札の上限（未満）
+var NINE_BONUS = 9;    // 組に使った現生人類1枚あたりの得点
 var RAINBOW  = "linear-gradient(90deg,#C25A3C 0 25%,#3F72A6 25% 50%,#5E9150 50% 75%,#8E6DAE 75% 100%)";
 
 var DIFF = {
@@ -379,12 +381,42 @@ function winOption(hand, exposed){
   return null;
 }
 
+/* ゴリラ宣言。ゴリラ1枚を場に出す代わりに、3組そろう前に局を終える。
+   条件は「2組 ＋ 出すゴリラ1枚 ＋ 残り2枚が KNOCK_MAX 点未満」。
+   出したゴリラは失点に数えない——これが宣言の代償であり、成立の前提でもある
+   （ゴリラは10点なので、数えると条件を永久に満たせなくなる）。 */
+function knockOption(P){
+  var E = P.melds.length, hand = P.hand;
+  if (E > 2 || hand.length !== 10 - 3*E) return null;
+  var need = 2 - E, best = null;
+  for (var d=0; d<hand.length; d++){
+    var rest = hand.slice(0,d).concat(hand.slice(d+1));
+    for (var g=0; g<rest.length; g++){
+      if (!isApe(rest[g])) continue;
+      var body = rest.slice(0,g).concat(rest.slice(g+1));
+      var pt = bestPartition(body, need);
+      if (pt.melds.length !== need || pt.dead >= KNOCK_MAX) continue;
+      if (!best || pt.dead < best.dead){
+        best = { discard:hand[d], gorilla:rest[g], melds:pt.melds, dead:pt.dead, rest:pt.rest };
+      }
+    }
+  }
+  return best;
+}
+
+/* 現生人類（9）を組に使えたら、その重さぶんが得点になる。
+   9は系譜が 7-8-9 の1通りしかなく、失点も9と重い。使う理由がないと札が死ぬ。 */
+function humanBonus(P){
+  var n = 0;
+  P.melds.forEach(function(m){
+    m.cards.forEach(function(c){ if (c.kind === "num" && c.n === 9) n++; });
+  });
+  return n * NINE_BONUS;
+}
+
 /* 伏せたまま晒せる組（レインボーを含まないもの）を列挙 */
 function exposableMelds(hand, exposed){
-  // 3組目は公開させない。公開できる組が手の内にある状態は、
-  // 余りの1枚を捨てれば上がれる状態と同じなので、上がり宣言のほうを使う。
-  // ここで公開を許すと公開組が3になり、上がり判定の前提から外れて上がれなくなる。
-  if (exposed >= 2) return [];
+  if (exposed >= 3) return [];
   var seen = {}, out = [];
   findMelds(hand).forEach(function(m){
     if (m.wild) return;
@@ -599,8 +631,14 @@ function render(){
       var lab = G.drawnFrom === "discard" ? "ゴリラ！" : "ツモ";
       act.appendChild(mkBtn(lab, "win", function(){ declareWin("you", w); }));
     }
+    var k = knockOption(G.you);
+    if (k){
+      act.appendChild(mkBtn("ゴリラ宣言（伏せ " + k.dead + "点）", "",
+                            function(){ declareKnock("you", k); }));
+    }
     hint.innerHTML = "捨てる札をクリック。" +
       (G.you.melds.length < 3 ? "揃った組の公開は精算0点だが手の内が読まれる。" : "") +
+      (knockOption(G.you) ? '<em>ゴリラ宣言で、3組そろう前に切り上げられます。</em>' : '') +
       '<span class="warn">レインボーを使った組は上がるまで公開できません。</span>';
   }
   renderLog();
@@ -657,7 +695,16 @@ function playerExpose(m){
   if (G.over || G.cur!=="you" || G.phase!=="act") return;
   expose(G.you, m);
   log("あなたが " + meldName(m) + " を公開した。", "you");
+  if (finishByExpose("you")) return;
   render();
+}
+
+/* 3組目を公開したら、それが上がり。手の内には捨てる1枚だけが残っている。 */
+function finishByExpose(who){
+  var P = G[who];
+  if (P.melds.length !== 3 || P.hand.length !== 1) return false;
+  declareWin(who, { discard: P.hand[0], melds: [] });
+  return true;
 }
 
 function playerDiscard(c){
@@ -699,10 +746,15 @@ function evalHand(cards, maxMelds){
   for (var i=0;i<rest.length;i++) for (var j=i+1;j<rest.length;j++){
     var a = rest[i], b = rest[j];
     if (a.kind==="rainbow" || b.kind==="rainbow"){ bonus += 4; continue; }
-    if (a.color===b.color && Math.abs(a.n-b.n)<=2) bonus += 3;
-    else if (a.n===b.n) bonus += 3;
+    var pair = (a.color===b.color && Math.abs(a.n-b.n)<=2) || (a.n===b.n);
+    if (!pair) continue;
+    bonus += 3;
+    if (a.n===9 || b.n===9) bonus += 2;      // 9は完成すれば得点になるので、育てる価値がある
   }
-  return p.dead - Math.min(bonus, 14);
+  // すでに組に入っている現生人類は、そのぶん得点になる見込み
+  var nine = 0;
+  p.melds.forEach(function(m){ m.cards.forEach(function(c){ if (c.kind==="num" && c.n===9) nine++; }); });
+  return p.dead - Math.min(bonus, 16) - nine * NINE_BONUS * 0.5;
 }
 
 /* 相手が欲しがっていそうな札ほど捨てにくい */
@@ -758,6 +810,15 @@ function cpuTurn(){
     var w = winOption(G.cpu.hand, G.cpu.melds.length);
     if (w){ declareWin("cpu", w); return; }
 
+    // ゴリラ宣言。相手の伏せ札は見えないので、公開情報（相手の公開組数・山札の残り）と
+    // 自分の伏せ札の軽さだけで決める
+    var k = knockOption(G.cpu);
+    if (k){
+      var urgency = G.you.melds.length * 2 + (G.deck.length <= 10 ? 3 : (G.deck.length <= 16 ? 1 : 0));
+      var worth = urgency + (KNOCK_MAX - k.dead) / 2.5 + (Math.random() - 0.5) * d.noise;
+      if (k.dead <= 2 || worth >= 4.5){ declareKnock("cpu", k); return; }
+    }
+
     // 公開するか。手の内を晒す代わりに、先に上がられてもその組が失点にならない。
     // 相手が近いほど、また組が重いほど、公開する価値が上がる。
     var risk = (G.you.melds.length >= 2 ? 4 : G.you.melds.length * 2) +
@@ -772,6 +833,7 @@ function cpuTurn(){
       if (worth >= 3 || Math.random() < d.exposeEarly){
         expose(G.cpu, m);
         log("CPUが " + meldName(m) + " を公開した。", "cpu");
+        if (finishByExpose("cpu")) return;
         render();
       }
     }
@@ -804,14 +866,48 @@ function declareWin(who, w){
 
   var loser = other(who);
   var lp = settleOf(G[loser]);
-  var gained = lp.dead;
+  var bonus = humanBonus(G[who]);
+  var gained = lp.dead + bonus;
   G.score[who] += gained;
 
-  var call = (who==="you" ? G.drawnFrom : G.drawnFrom) === "discard" ? "ゴリラ！" : "ツモ";
-  log(nameOf(who) + "が" + call + "で上がった。" + nameOf(loser) + "の伏せ札 " + gained + "点を獲得。",
+  var call = G.drawnFrom === "discard" ? "ゴリラ！" : "ツモ";
+  log(nameOf(who) + "が" + call + "で上がった。" + nameOf(loser) + "の伏せ札 " + lp.dead + "点" +
+      (bonus ? "＋現生人類 " + bonus + "点" : "") + " を獲得。",
       who==="you" ? "hot" : "bad");
   render();
-  later(function(){ showSheet({ kind:"win", winner:who, call:call, gained:gained, deadCards:lp.rest }); }, 650);
+  later(function(){
+    showSheet({ kind:"win", winner:who, call:call, gained:gained, bonus:bonus,
+                dead:lp.dead, deadCards:lp.rest });
+  }, 650);
+}
+
+function declareKnock(who, k){
+  if (G.over) return;
+  G.over = true;
+  clearTimers();
+  doDiscard(G[who], k.discard);
+  var gi = G[who].hand.indexOf(k.gorilla);
+  if (gi >= 0) G[who].hand.splice(gi, 1);
+  G.discard.push(k.gorilla);                 // ゴリラは場へ。失点に数えない
+  k.melds.forEach(function(m){ expose(G[who], m); });
+
+  var foe = other(who);
+  var mine = settleOf(G[who]);
+  var theirs = settleOf(G[foe]);
+  var diff = Math.max(0, theirs.dead - mine.dead);
+  var bonus = humanBonus(G[who]);
+  var gained = diff + bonus;
+  G.score[who] += gained;
+
+  log(nameOf(who) + "がゴリラ宣言。伏せ札 " + mine.dead + "点 対 " + theirs.dead + "点で差の " +
+      diff + "点" + (bonus ? "＋現生人類 " + bonus + "点" : "") + " を獲得。",
+      who === "you" ? "hot" : "bad");
+  render();
+  later(function(){
+    showSheet({ kind:"knock", winner:who, gained:gained, bonus:bonus,
+                mine:mine.dead, theirs:theirs.dead,
+                myRest:mine.rest, foeRest:theirs.rest });
+  }, 650);
 }
 
 function settleDraw(){
@@ -846,7 +942,16 @@ function showSheet(r){
     if (!tie) h += '<p class="sub">' + (win ? "CPU" : "あなた") + 'は今日一日「ゴリラさん」。</p>';
   } else if (r.kind === "win"){
     h += '<h2>' + nameOf(r.winner) + 'の' + r.call + '</h2>';
-    h += '<p class="sub">' + nameOf(other(r.winner)) + 'の伏せ札 ' + r.gained + '点が' + nameOf(r.winner) + 'の得点に。</p>';
+    h += '<p class="sub">' + nameOf(other(r.winner)) + 'の伏せ札 ' + r.dead + '点' +
+         (r.bonus ? '　＋　現生人類 ' + r.bonus + '点' : '') +
+         '　＝　' + nameOf(r.winner) + 'に ' + r.gained + '点。</p>';
+  } else if (r.kind === "knock"){
+    h += '<h2>' + nameOf(r.winner) + 'のゴリラ宣言</h2>';
+    h += '<p class="sub">ゴリラを1枚場に出し、3組そろう前に局を終えた。' +
+         '伏せ札は ' + nameOf(r.winner) + ' ' + r.mine + '点 対 ' + nameOf(other(r.winner)) + ' ' + r.theirs + '点。' +
+         'その差 ' + Math.max(0, r.theirs - r.mine) + '点' +
+         (r.bonus ? '　＋　現生人類 ' + r.bonus + '点' : '') +
+         '　＝　' + r.gained + '点。</p>';
   } else {
     h += '<h2>流局</h2>';
     h += '<p class="sub">山札が尽きたので強制精算。' +
@@ -876,7 +981,10 @@ function showSheet(r){
     return wrap;
   }
   if (r.kind === "win"){
-    s.appendChild(deadBlock(nameOf(other(r.winner)) + "の伏せ札", r.deadCards, r.gained));
+    s.appendChild(deadBlock(nameOf(other(r.winner)) + "の伏せ札", r.deadCards, r.dead));
+  } else if (r.kind === "knock"){
+    s.appendChild(deadBlock(nameOf(r.winner) + "の伏せ札", r.myRest, r.mine));
+    s.appendChild(deadBlock(nameOf(other(r.winner)) + "の伏せ札", r.foeRest, r.theirs));
   } else {
     s.appendChild(deadBlock("あなたの伏せ札", r.youRest, r.youDead));
     s.appendChild(deadBlock("CPUの伏せ札", r.cpuRest, r.cpuDead));
@@ -931,11 +1039,21 @@ function showRules(){
     '<p>揃った組は自分の手番に公開できます。<strong>公開した組は精算で0点</strong>、伏せたままだと札の点がそのまま失点になる。</p>' +
     '<p>では常に公開すべきかというと、そうではありません。公開は<strong>手の内を相手に教える</strong>——残り何組かが見えるので、相手は危険な札を止め、こちらの上がりは遠のきます。公開の唯一の利点は<strong>相手に先に上がられたときの保険</strong>。相手が近づいたと見たら公開する、まだ遠いなら伏せて粘る。その読み合いです。</p>' +
     '<p><strong>レインボーゴリラを使った組は、上がるまで公開できません。</strong>組は一気に埋まりますが、上がれなければその3枚は必ず失点として残る——勝負手専用の札です。1つの組に使えるのは1枚まで。</p>' +
-    '<p class="sub">3組目は公開できません。そこまで揃ったなら、余りの1枚を捨てて上がれるからです。</p>' +
+    '<p class="sub">3組目を公開すると、その時点で上がりになります。</p>' +
+
+    '<h3>ゴリラ宣言</h3>' +
+    '<p>3組そろう前でも、<strong>ゴリラを1枚その場に出して</strong>局を切り上げられます。条件は<strong>2組 ＋ 出すゴリラ1枚 ＋ 残り2枚が' + KNOCK_MAX + '点未満</strong>。</p>' +
+    '<p>得点は<strong>相手の伏せ札との差</strong>だけ。3組そろえれば相手の伏せ札を丸ごと取れるので、それより取り分は小さい——その代わり、相手が仕上げる前に終わらせられます。差が無ければ0点の空振りです。</p>' +
+    '<p class="sub">出したゴリラは失点に数えません。ゴリラは' + APE_PEN + '点なので、数えると条件を永久に満たせないからです。抱えていれば重荷、出せば切り札。</p>' +
+
+    '<h3>現生人類ボーナス</h3>' +
+    '<p>上がった側の組に<strong>現生人類（9）が使われていれば、1枚につき ' + NINE_BONUS + '点</strong>。系譜 7-8-9 で ' + NINE_BONUS + '点、9の伝播なら ' + (NINE_BONUS*3) + '点です。</p>' +
+    '<p class="sub">9は系譜が 7-8-9 の1通りしかなく、伏せたままなら9点の失点になる。進歩の頂点まで登りきる理由は、ここにあります。</p>' +
 
     '<h3>精算</h3>' +
     '<ul>' +
     '<li>上がられた側は、<strong>伏せ札の合計点</strong>を相手に献上する</li>' +
+    '<li>ゴリラ宣言なら、<strong>伏せ札の差</strong>だけが動く</li>' +
     '<li><strong>山札が尽きたら強制精算</strong>。伏せ札が少ない方が、その差を得点する</li>' +
     '<li>先に' + GOAL + '点に届いた方の勝ち</li>' +
     '</ul>' +
