@@ -1,371 +1,379 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>若い類人猿のための第三のゴリラ｜進歩の段を集める、2人用のカードゲーム</title>
+<meta name="description" content="インストール不要・通信なし・ブラウザだけで動く2人用の集め役カードゲーム。4つの大陸と9つの進歩の段でできた38枚から3組を揃えます。進歩の道の真ん中に座るゴリラは、抱えれば罰点、場に出せば切り札。鷹巣堂のアナログゲームのファンメイド ブラウザ版。">
+<meta name="theme-color" content="#1f2724">
+
 <link rel="canonical" href="https://pikaring.github.io/gorilla-gorilla-gorilla/">
-<title>若い類人猿のための第三のゴリラ</title>
+<meta property="og:type" content="website">
+<meta property="og:title" content="若い類人猿のための第三のゴリラ｜進歩の段を集める、2人用のカードゲーム">
+<meta property="og:description" content="4つの大陸と9つの進歩の段でできた38枚から3組を揃える2人用カードゲーム。真ん中に座るゴリラは、抱えれば罰点、場に出せば切り札。インストール不要・通信なし。">
+<meta property="og:url" content="https://pikaring.github.io/gorilla-gorilla-gorilla/">
+<meta property="og:image" content="https://pikaring.github.io/gorilla-gorilla-gorilla/assets/icon.png">
+
+<link rel="icon" href="assets/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Antique&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
-<style>
-  :root{
-    --bg:#151917; --bg2:#101413; --panel:#1E2422; --panel2:#28302D;
-    --line:#39423E; --line2:#4C5651;
-    --fg:#E6E1D4; --muted:#96A09A;
-    --bone:#E9E2D2; --ink:#14100C;
-    --af:#C25A3C; --eu:#3F72A6; --am:#5E9150; --oc:#8E6DAE;
-    --banana:#F2C238; --alarm:#D9534F;
-    --disp:"Zen Antique","Hiragino Mincho ProN","Yu Mincho",serif;
-    --body:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP",sans-serif;
-    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-    color-scheme:dark;
-    padding-top:env(safe-area-inset-top, 0px);
-    padding-bottom:env(safe-area-inset-bottom, 0px);
-  }
-  *{box-sizing:border-box}
-  /* 単体配信（GitHub Pages）では骨組みが付かないので、自前で持つ。
-     作者スタイルはブラウザ標準の [hidden]{display:none} に勝つため、!important が要る。 */
-  [hidden]{display:none!important}
-  img{max-width:100%}
-  body{margin:0; background:var(--bg); color:var(--fg); font-family:var(--body); font-size:15px; line-height:1.75;
-    -webkit-text-size-adjust:100%;
-    background-image:radial-gradient(130% 70% at 50% -6%, #262f2b 0%, rgba(21,25,23,0) 58%)}
-  .wrap{max-width:720px; margin:0 auto; padding-inline:20px; padding-block:0 56px}
-  a{color:var(--banana)}
-
-  nav{display:flex; gap:14px; flex-wrap:wrap; align-items:center;
-    border-bottom:1px solid var(--line); padding-block:14px; margin-bottom:38px}
-  nav a{font-size:12px; color:var(--muted); text-decoration:none; letter-spacing:.06em}
-  nav a:hover{color:var(--banana)}
-  nav .spacer{flex:1 1 auto}
-  .playnav{background:var(--banana); color:var(--ink)!important; font-weight:700;
-    border-radius:3px; padding:5px 13px; letter-spacing:.1em}
-
-  header .eyebrow{font-family:var(--disp); font-size:14px; letter-spacing:.2em; color:var(--muted); margin:0}
-  header h1{font-family:var(--disp); font-size:clamp(30px,8vw,46px); letter-spacing:.06em;
-    line-height:1.24; margin:4px 0 0; color:var(--bone); text-wrap:balance}
-  .lede{font-family:var(--disp); font-size:clamp(17px,4.2vw,22px); color:var(--banana);
-    letter-spacing:.04em; margin:26px 0 0; line-height:1.6}
-  .sub{color:var(--muted); font-size:14px; margin:12px 0 0}
-
-  .cta{display:flex; gap:11px; flex-wrap:wrap; margin:30px 0 8px}
-  .play{background:var(--banana); color:var(--ink); font-weight:700; font-size:16px; letter-spacing:.12em;
-    text-decoration:none; border-radius:4px; padding:13px 30px; display:inline-block}
-  .play:hover{filter:brightness(1.08)}
-  .ghost{border:1px solid var(--line2); color:var(--fg); text-decoration:none; font-size:14px;
-    border-radius:4px; padding:13px 20px; display:inline-block}
-  .ghost:hover{background:var(--panel2)}
-  .facts{font-family:var(--mono); font-size:11.5px; color:var(--muted); letter-spacing:.08em; margin-top:6px}
-
-  section{margin-top:46px}
-  h2{font-family:var(--disp); font-size:20px; letter-spacing:.1em; color:var(--bone);
-    margin:0 0 4px; padding-bottom:9px; border-bottom:1px solid var(--line)}
-  h3{font-family:var(--disp); font-size:15px; letter-spacing:.08em; color:var(--banana); margin:22px 0 2px}
-  p{margin:10px 0}
-  ul{padding-left:1.25em; margin:10px 0}
-  li{margin:5px 0}
-  strong{color:var(--bone)}
-
-  .conts{display:flex; gap:6px; flex-wrap:wrap; margin:14px 0}
-  .conts span{font-size:11.5px; padding:3px 10px; border-radius:2px; color:var(--ink); font-weight:700; letter-spacing:.06em}
-  .ladder{display:grid; grid-template-columns:repeat(auto-fill,minmax(132px,1fr)); gap:5px; margin:14px 0}
-  .ladder div{font-size:12px; background:var(--panel2); border-left:2px solid var(--line2); padding:5px 10px; line-height:1.5}
-  .ladder div b{font-family:var(--mono); color:var(--muted); margin-right:7px}
-  .ladder div.ape{border-left-color:var(--banana); color:var(--banana); background:#272318}
-  .ladder div.ape b{color:var(--banana)}
-
-  .cards{display:flex; gap:8px; flex-wrap:wrap; margin:18px 0}
-  .card{width:74px;height:105px;border-radius:4px;background:var(--bone);color:var(--ink);
-    display:flex;flex-direction:column;overflow:hidden;position:relative;
-    box-shadow:0 2px 0 rgba(0,0,0,.45),0 6px 14px rgba(0,0,0,.3)}
-  .card i.band{height:7px;display:block}
-  .card b.num{font-family:var(--disp);font-size:32px;line-height:1;padding:7px 0 0 8px;font-weight:400}
-  .card u.cont{font-size:8.5px;letter-spacing:.06em;padding:0 8px;margin-top:2px;font-weight:700;text-decoration:none}
-  .card s.stage{font-size:9px;padding:0 7px;margin-top:auto;margin-bottom:6px;color:#3A332B;font-weight:500;text-decoration:none;letter-spacing:-.02em}
-  .card em.pen{position:absolute;right:5px;top:12px;font-family:var(--mono);font-size:9px;font-weight:600;font-style:normal;
-    color:var(--ink);background:var(--banana);border-radius:2px;padding:0 3px}
-  .caption{font-size:12px; color:var(--muted); margin-top:-4px}
-  .card img.art{display:block;width:100%;height:42px;object-fit:contain;margin-top:1px;
-    mix-blend-mode:multiply;pointer-events:none}
-  .card.arton i.band{height:13px}
-  .card.arton u.cont{position:absolute; top:0; left:0; right:0; height:13px; line-height:13px;
-    margin:0; padding:0 6px; font-size:7.5px; color:rgba(255,255,255,.95)!important; text-align:center}
-  .card.arton b.num{font-size:28px;padding-top:6px}
-
-  .book{border-left:2px solid var(--line2); padding:2px 0 2px 14px; margin:20px 0}
-  .book h3{margin:0 0 2px}
-  .book p{margin:4px 0 8px; font-size:13.5px; color:var(--fg)}
-  .book a{font-size:13px; text-decoration:none; border-bottom:1px solid rgba(242,194,56,.4)}
-  .book a:hover{border-color:var(--banana)}
-  .disclose{font-size:11.5px; color:var(--muted); line-height:1.7; margin-top:22px;
-    background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:11px 13px}
-
-  .faq dt{font-weight:700; color:var(--bone); margin-top:16px; font-size:14px}
-  .faq dd{margin:4px 0 0; color:var(--fg); font-size:14px}
-
-  footer{margin-top:54px; padding-top:18px; border-top:1px solid var(--line);
-    font-size:12px; color:var(--muted); display:flex; gap:14px; flex-wrap:wrap}
-  footer .counter b{color:var(--fg); font-weight:600; font-variant-numeric:tabular-nums}
-
-  @media (max-width:520px){ nav{gap:10px} nav a{font-size:11.5px} }
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3FCFQY4W85"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-3FCFQY4W85');
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": ["WebApplication", "GameApplication"],
+  "name": "若い類人猿のための第三のゴリラ",
+  "url": "https://pikaring.github.io/gorilla-gorilla-gorilla/",
+  "description": "インストール不要・通信なし・ブラウザだけで動く2人用の集め役カードゲーム。4つの大陸と9つの進歩の段でできた38枚から3組を揃えます。進歩の道の真ん中に座るゴリラは、抱えれば罰点、場に出せば切り札。鷹巣堂のアナログゲームのファンメイド ブラウザ版。",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "すべて（ウェブブラウザ）",
+  "inLanguage": "ja",
+  "isAccessibleForFree": true,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" },
+  "license": "https://opensource.org/licenses/MIT",
+  "author": { "@type": "Person", "name": "pikaring", "url": "https://pikaring.github.io/" },
+  "browserRequirements": "JavaScript が 動く ブラウザ",
+  "screenshot": "https://pikaring.github.io/gorilla-gorilla-gorilla/assets/icon.png"
+}
+</script>
 </head>
 <body>
-<div class="wrap">
-  <nav>
-    <a href="#game">どんなゲーム</a>
-    <a href="#how">あそびかた</a>
-    <a href="#made">つくり</a>
-    <a href="#shelf">本だな</a>
-    <a href="#faq">よくある質問</a>
-    <span class="spacer"></span>
-    <a class="playnav" href="app/index.html">あそぶ</a>
-  </nav>
 
-  <header>
-    <p class="eyebrow">若い類人猿のための</p>
-    <h1>第三のゴリラ</h1>
-    <p class="lede">進歩の道の真ん中に、ゴリラが座っている。</p>
-    <p class="sub">
-      4つの大陸と9つの進歩の段でできた38枚の札から、3組を揃える2人用の対戦ゲーム。
-      ただし第5段はゴリラで、そこを通らずには歴史が繋がらない。しかも抱えたままだと罰10点。
-    </p>
-    <div class="cta">
-      <a class="play" href="app/index.html">いますぐ あそぶ</a>
-      <a class="ghost" href="https://github.com/pikaring/gorilla-gorilla-gorilla">GitHubで見る</a>
-    </div>
-    <p class="facts">無料 ／ インストール不要 ／ 通信なし ／ ブラウザだけで動く</p>
-  </header>
+<header class="header">
+  <div class="wrap header-inner">
+    <a class="brand" href="./">若い類人猿のための第三のゴリラ</a>
+    <nav class="nav">
+      <a href="#shelf">関連の本</a>
+      <a href="#about">どんなゲーム</a>
+      <a href="#howto">あそびかた</a>
+      <a href="#make">つくり</a>
+      <a href="#faq">よくある質問</a>
+      <a href="#family">ほかのツール</a>
+      <a class="btn btn-main" href="app/">あそぶ</a>
+    </nav>
+  </div>
+</header>
 
-  <section id="game">
-    <h2>どんなゲーム</h2>
-    <p>
-      札は<strong>4つの大陸</strong>と<strong>9つの進歩の段</strong>でできています。
-      同じ大陸で段を登れば「系譜」、違う大陸で同じ段が揃えば「伝播」。
-      どちらも3枚で一組です。
-    </p>
-    <div class="conts">
-      <span style="background:#C25A3C">アフリカ</span>
-      <span style="background:#3F72A6">ユーラシア</span>
-      <span style="background:#5E9150">アメリカ</span>
-      <span style="background:#8E6DAE">オセアニア</span>
-    </div>
-    <div class="ladder">
-      <div><b>1</b>樹上のサル</div>
-      <div><b>2</b>火のボノボ</div>
-      <div><b>3</b>直立二足歩行</div>
-      <div><b>4</b>石器</div>
-      <div class="ape"><b>5</b>ゴリラ ／ 罰10点</div>
-      <div><b>6</b>言語</div>
-      <div><b>7</b>農耕</div>
-      <div><b>8</b>文字と都市</div>
-      <div><b>9</b>現生人類</div>
-    </div>
-    <p>
-      系譜は1つの大陸につき7通りありますが、そのうち <strong>3-4-5／4-5-6／5-6-7 の3通りはゴリラを通らないと繋がりません</strong>。
-      中盤の進歩を扱おうとすれば、必ず罰点を抱えることになる。5の伝播——3大陸ぶんのゴリラ——に至っては30点です。
-    </p>
-    <div class="cards">
-      <div class="card" data-art="4"><i class="band" style="background:#C25A3C"></i><b class="num">4</b><u class="cont" style="color:#C25A3C">アフリカ</u><s class="stage">石器</s></div>
-      <div class="card" data-art="5"><i class="band" style="background:#C25A3C"></i><b class="num">5</b><u class="cont" style="color:#C25A3C">アフリカ</u><s class="stage">ゴリラ</s><em class="pen">罰10</em></div>
-      <div class="card" data-art="6"><i class="band" style="background:#C25A3C"></i><b class="num">6</b><u class="cont" style="color:#C25A3C">アフリカ</u><s class="stage">言語</s></div>
-      <div class="card" data-art="5"><i class="band" style="background:linear-gradient(90deg,#C25A3C 0 25%,#3F72A6 25% 50%,#5E9150 50% 75%,#8E6DAE 75% 100%)"></i><b class="num">★</b><u class="cont" style="color:#8E6DAE">レインボー</u><s class="stage">萬能</s><em class="pen">罰10</em></div>
-    </div>
-    <p class="caption">左の3枚が系譜 4-5-6。右はレインボーゴリラ——どの札の代わりにもなるが、使った組は上がるまで公開できない。</p>
-  </section>
-
-  <section id="how">
-    <h2>あそびかた</h2>
-
-    <h3>手番</h3>
-    <p>
-      手の内は9枚。山札か捨て札の一番上か、どちらかから1枚引いて、1枚捨てる。ポン・チーはありません。
-      <strong>捨て札を拾った手番は山札が減らない</strong>ので、拾うほど局が延びます。急ぐか粘るかが山札の残りに直結する。
-    </p>
-
-    <h3>上がり</h3>
-    <p>
-      3組9枚を揃えたら上がり。麻雀と違って頭は要りません。
-      2人なので、自分の手番に置かれている捨て札は必ず相手が直前に捨てた札です。
-      つまり<strong>それを拾って上がれば実質のロン</strong>——そのとき叫ぶのが「ゴリラ！」。
-      山札から引いて上がれば「ツモ」です。
-    </p>
-
-    <h3>公開</h3>
-    <p>
-      揃った組は自分の手番に公開できます。<strong>公開した組は精算で0点</strong>。伏せたままだと札の点がそのまま失点になる。
-    </p>
-    <p>
-      では常に公開すべきかというと、そうではありません。公開は<strong>手の内を相手に教える</strong>——
-      残り何組かが見えるので、相手は危険な札を止め、こちらの上がりは遠のきます。
-      公開の唯一の利点は<strong>相手に先に上がられたときの保険</strong>。
-      相手が近づいたと見たら公開する、まだ遠いなら伏せて粘る。その読み合いです。
-    </p>
-
-    <h3>ゴリラ宣言</h3>
-    <p>
-      3組そろう前でも、<strong>ゴリラを1枚その場に出して</strong>局を切り上げられます。
-      条件は<strong>2組 ＋ 出すゴリラ1枚 ＋ 残り2枚が10点未満</strong>。
-      得点は相手の伏せ札との<strong>差</strong>だけなので、3組そろえるより取り分は小さい。
-      その代わり、相手が仕上げる前に終わらせられます。
-    </p>
-    <p>
-      出したゴリラは失点に数えません。ゴリラは10点なので、数えると条件を永久に満たせないからです。
-      <strong>抱えていれば重荷、出せば切り札。</strong>
-    </p>
-
-    <h3>現生人類ボーナス</h3>
-    <p>
-      上がった側の組に<strong>現生人類（9）が使われていれば、1枚につき9点</strong>。
-      系譜 7-8-9 で9点、9の伝播なら27点です。
-      9は系譜が 7-8-9 の1通りしかなく、伏せたままなら9点の失点になる。
-      進歩の頂点まで登りきる理由は、ここにあります。
-    </p>
-
-    <h3>精算</h3>
-    <ul>
-      <li>上がられた側は、伏せ札の合計点を相手に献上する</li>
-      <li>ゴリラ宣言なら、伏せ札の<strong>差</strong>だけが動く</li>
-      <li>山札が尽きたら強制精算。伏せ札が少ない方が、その差を得点する</li>
-      <li>先に100点に届いた方の勝ち</li>
-    </ul>
-  </section>
-
-  <section id="made">
-    <h2>つくり</h2>
-    <p>
-      題は<strong>ジャレド・ダイアモンド『若い読者のための第三のチンパンジー』</strong>のもじりです。
-      もとは磯野貴巨氏が2020年に発表したカードゲーム「第三のゴリラ」——
-      ダイアモンドのその本を出発点に作られた4人用のパーティゲームでした。
-      それを2人用の集め役ゲームに組み直したのがこれです。
-    </p>
-    <p>
-      <code>gorilla-gorilla-gorilla</code> はニシゴリラの学名 <em>Gorilla gorilla gorilla</em> から。
-      ちょうどゴリラが3つ並びます。
-    </p>
-    <p>
-      対戦相手は手の内を全探索で分解し、拾いの損得、公開すべきかのリスク見積もり、
-      そして「あなたがどの札を拾ったか」から推し量った危険度をもとに捨て札を選びます。
-      難易度は<strong>やさしい／ふつう／ゴリラ級</strong>の3段階。
-    </p>
-  </section>
-
-  <section id="shelf">
-    <h2>本だな</h2>
-    <p class="sub">このゲームの下敷きになった本。</p>
-
-    <div class="book">
-      <h3>若い読者のための第三のチンパンジー：人間という動物の進化と未来</h3>
-      <p>
-        ジャレド・ダイアモンド、レベッカ・ステフォフ／秋山勝 訳、草思社。
-        人間がどれだけチンパンジーに近く、そして何が違うのかを一冊にまとめたもの。
-        このゲームの題は、この本をもじったものです。
-      </p>
-      <a href="https://www.amazon.co.jp/dp/B01HT2GZL4?tag=redcomet-22">Amazonで見る ↗</a>
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="pill"><b>無料</b> · インストール不要 · 通信なし · MIT License</span>
+      <h1>進歩の真ん中に、<br>ゴリラが座る。</h1>
+      <p class="lead">4つの大陸と9つの進歩の段でできた38枚から、3組を揃える2人用の集め役です。
+        同じ大陸で段を登れば「系譜」、違う大陸で同じ段が揃えば「伝播」。
+        ただし第5段はゴリラで、中盤の系譜はそこを通らないと繋がりません。
+        抱えたままなら罰10点、場に出せば局を切り上げる切り札になります。</p>
+      <div class="hero-actions">
+        <a class="btn btn-main" href="app/">いますぐ あそぶ</a>
+        <a class="btn btn-sub" href="https://github.com/pikaring/gorilla-gorilla-gorilla">GitHubで見る</a>
+      </div>
+      <p class="hero-note">1局はおよそ5分。先に100点に届いた方の勝ちです。</p>
     </div>
 
-    <div class="book">
-      <h3>ボノボ──最後の類人猿</h3>
-      <p>
-        前川貴行／新日本出版社。コンゴ盆地の熱帯雨林にだけ住むボノボを追った写真絵本。
-        新種として認められてまだ100年に満たない、最後に見つかった類人猿です。
-        第2段「火のボノボ」の主。
-      </p>
-      <a href="https://www.amazon.co.jp/dp/4406068775?tag=redcomet-22">Amazonで見る ↗</a>
+    <div class="phone" aria-hidden="true">
+      <div class="screen screen-table">
+        <div class="ghud">
+          <span>CPU 手の内 <b>9</b></span>
+          <span>第 <b>1</b> 局</span>
+          <span>あなた <b>9</b></span>
+        </div>
+        <div class="gmid">
+          <div class="gslot"><div class="gback"></div><p class="gcap">山札<br><b>19</b></p></div>
+          <div class="gslot">
+            <div class="gcard">
+              <i class="gb" style="background:#5E9150"></i><span class="gn">7</span>
+              <img class="ga" src="img/7.png" alt=""><span class="gs">農耕</span>
+            </div>
+            <p class="gcap">捨て札<br><b>1</b></p>
+          </div>
+        </div>
+        <div class="ghand">
+          <div class="gcard"><i class="gb" style="background:#C25A3C"></i><span class="gn">3</span><img class="ga" src="img/3.png" alt=""><span class="gs">直立二足歩行</span></div>
+          <div class="gcard"><i class="gb" style="background:#C25A3C"></i><span class="gn">4</span><img class="ga" src="img/4.png" alt=""><span class="gs">石器</span></div>
+          <div class="gcard sel"><i class="gb" style="background:#C25A3C"></i><span class="gn">5</span><span class="gp">罰10</span><img class="ga" src="img/5.png" alt=""><span class="gs">ゴリラ</span></div>
+          <div class="gcard"><i class="gb" style="background:#3F72A6"></i><span class="gn">8</span><img class="ga" src="img/8.png" alt=""><span class="gs">文字と都市</span></div>
+          <div class="gcard"><i class="gb" style="background:#8E6DAE"></i><span class="gn">9</span><img class="ga" src="img/9.png" alt=""><span class="gs">現生人類</span></div>
+        </div>
+        <p class="ghint">アフリカ 3-4-5。ゴリラを通らないと繋がらない。</p>
+        <div class="gfoot"><b>ゴリラ宣言</b></div>
+      </div>
     </div>
+  </div>
+</section>
 
-    <div class="book">
-      <h3>ダーウィン事変（1）</h3>
-      <p>
-        うめざわしゅん／講談社 アフタヌーンコミックス。
-        人間とチンパンジーのあいだに生まれた「ヒューマンジー」を主人公にしたマンガ。
-        人とサルの境目はどこにあるのかという問いを、物語の側から突きます。
-      </p>
-      <a href="https://www.amazon.co.jp/dp/B08N68FBQB?tag=redcomet-22">Amazonで見る ↗</a>
-    </div>
-
-    <div class="book">
-      <h3>コボルドのRPGデザイン</h3>
-      <p>
-        ウォルフガング・バウアー 他／新紀元社。コボルド・シリーズのRPG版。
-        遊ぶ人に何を選ばせるか、という設計の話。
-        このゲームでいちばん悩むところ——揃った組をいま公開するか、伏せたまま粘るか——は、
-        まさにその問いです。
-      </p>
-      <a href="https://www.amazon.co.jp/dp/4775319205?tag=redcomet-22">Amazonで見る ↗</a>
-    </div>
-  </section>
-
-  <section id="faq" class="faq">
-    <h2>よくある質問</h2>
-    <dl>
-      <dt>原作のカードゲームを持っていないと遊べませんか？</dt>
-      <dd>いりません。これは原作とはルールの異なる別のゲームです。ブラウザだけで完結します。</dd>
-
-      <dt>スマートフォンでも遊べますか？</dt>
-      <dd>遊べます。縦画面に合わせて札の大きさが変わります。</dd>
-
-      <dt>通信していますか？</dt>
-      <dd>していません。対戦相手の思考も含めて、すべてブラウザの中で動いています。</dd>
-
-      <dt>ほかのゲームもありますか？</dt>
-      <dd>
-        同じ『銃・病原菌・鉄』から作った
-        <a href="https://pikaring.github.io/guns-germs-and-diamond/">銃・病原菌・ダイヤモンド</a>
-        があります。
-      </dd>
-
-      <dt>なぜ第5段がゴリラなのですか？</dt>
-      <dd>
-        進歩の道の真ん中にゴリラを置くと、中盤の系譜が必ずゴリラを通ることになります。
-        どれだけ段を登ってもゴリラは抜けない、という原作の主題が、そのまま確率の構造になる。
-      </dd>
-    </dl>
-  </section>
-
-  <p class="disclose">
-    当サイトはAmazonアソシエイト・プログラムに参加しており、掲載しているリンクから商品が買われると運営者に紹介料が入る場合があります。
-  </p>
-
-  <footer>
-    <span>若い類人猿のための第三のゴリラ</span>
-    <a href="app/index.html">あそぶ</a>
-    <a href="https://pikaring.github.io/guns-germs-and-diamond/">銃・病原菌・ダイヤモンド</a>
-    <a href="https://isonotakami.hatenadiary.jp/archive/category/%E7%AC%AC%E4%B8%89%E3%81%AE%E3%82%B4%E3%83%AA%E3%83%A9">原作「第三のゴリラ」</a>
-    <a href="https://pikaring.github.io/">ほかのツール</a>
-    <span class="counter">累計アクセス <b id="counter-value">―</b> 回</span>
-  </footer>
+<div class="specs">
+  <div class="wrap specs-grid">
+    <div class="spec"><b>インストール不要</b><span>ブラウザで開くだけ</span></div>
+    <div class="spec"><b>通信なし</b><span>読みこんだ あとは オフラインでも</span></div>
+    <div class="spec"><b>1局 5分</b><span>先に100点で決着</span></div>
+    <div class="spec"><b>3段階のCPU</b><span>やさしい／ふつう／ゴリラ級</span></div>
+  </div>
 </div>
 
-<script>
-  // アクセスカウンター（ツール群で共通のGAS。page名でサイトごとに別カウント）
-  (function () {
-    var el = document.getElementById('counter-value');
-    if (!el) return;
-    var page = location.pathname.replace(/index\.html$/, '');
-    fetch('https://script.google.com/macros/s/AKfycbxkQLZXNAFXkT7zhIO0TmMDGU3A0TQ234Lf-yhw5J7lvFAjCi3KLNLRd_LKd_xlOxPd/exec?page=' + encodeURIComponent(page))
-      .then(function (r) { return r.json(); })
-      .then(function (d) { el.textContent = Number(d.count).toLocaleString('ja-JP'); })
-      .catch(function () { el.textContent = '―'; });
-  })();
-</script>
+<section class="goods" id="shelf">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">BOARD GAME SHELF</p>
+      <h2>このゲームの、うしろにある本。</h2>
+      <p>タイトルの出典と、札に出てくる生き物と、設計を考えるときに読んだ本です。</p>
+    </div>
+    <div class="goods-grid">
+
+      <div class="good" data-asin="B01HT2GZL4">
+        <p class="gcat">元ネタ</p>
+        <h3>若い読者のための第三のチンパンジー</h3>
+        <p>ジャレド・ダイアモンド、レベッカ・ステフォフ／秋山勝 訳、草思社。
+          人間がどれだけチンパンジーに近く、そして何が違うのかを一冊にまとめたもの。
+          このゲームの題は、この本をもじったものです。</p>
+        <a class="glink" href="https://www.amazon.co.jp/dp/B01HT2GZL4?tag=redcomet-22" target="_blank" rel="sponsored noopener">Amazonで見る ↗</a>
+      </div>
+
+      <div class="good" data-asin="4406068775">
+        <p class="gcat">写真絵本</p>
+        <h3>ボノボ──最後の類人猿</h3>
+        <p>前川貴行／新日本出版社。コンゴ盆地の熱帯雨林にだけ住むボノボを追った写真絵本。
+          新種として認められてまだ100年に満たない、最後に見つかった類人猿です。第2段「火のボノボ」の主。</p>
+        <a class="glink" href="https://www.amazon.co.jp/dp/4406068775?tag=redcomet-22" target="_blank" rel="sponsored noopener">Amazonで見る ↗</a>
+      </div>
+
+      <div class="good" data-asin="B08N68FBQB">
+        <p class="gcat">マンガ</p>
+        <h3>ダーウィン事変（1）</h3>
+        <p>うめざわしゅん／講談社 アフタヌーンコミックス。
+          人間とチンパンジーのあいだに生まれた「ヒューマンジー」を主人公にしたマンガ。
+          人とサルの境目はどこにあるのかという問いを、物語の側から突きます。</p>
+        <a class="glink" href="https://www.amazon.co.jp/dp/B08N68FBQB?tag=redcomet-22" target="_blank" rel="sponsored noopener">Amazonで見る ↗</a>
+      </div>
+
+      <div class="good" data-asin="4775319205">
+        <p class="gcat">デザイン論</p>
+        <h3>コボルドのRPGデザイン</h3>
+        <p>ウォルフガング・バウアー 他／新紀元社。コボルド・シリーズのRPG版。
+          遊ぶ人に何を選ばせるか、という設計の話。
+          このゲームでいちばん悩むところ——揃った組をいま公開するか、伏せて粘るか——は、まさにその問いです。</p>
+        <a class="glink" href="https://www.amazon.co.jp/dp/4775319205?tag=redcomet-22" target="_blank" rel="sponsored noopener">Amazonで見る ↗</a>
+      </div>
+
+    </div>
+    <p class="goods-note">リンクは Amazonアソシエイトです。価格と 画像は 毎日 とりなおしています。</p>
+  </div>
+</section>
+
+<section id="about" class="alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">どんなゲーム</p>
+      <h2>4つの大陸と、<br>9つの進歩の段。</h2>
+      <p>手の内は9枚。3枚で一組、3組そろえたら上がりです。
+        麻雀と違って頭は要りません——3組なら9枚で割り切れるからです。</p>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <span class="num">01</span>
+        <h3>系譜と、伝播</h3>
+        <p>組は2種類しかありません。<b>系譜</b>は同じ大陸の連続する3段。
+          <b>伝播</b>は同じ段が異なる3つの大陸に揃った形です。</p>
+        <ul>
+          <li>系譜：アフリカ 3-4-5 のように段を登る</li>
+          <li>伝播：7がアフリカ・ユーラシア・アメリカに揃う</li>
+          <li>レインボーゴリラは足りない1枚の代わり（1組に1枚まで）</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="num">02</span>
+        <h3>第5段に、ゴリラが座っている</h3>
+        <p>系譜は1つの大陸につき7通りありますが、そのうち <b>3-4-5 / 4-5-6 / 5-6-7</b> の3通りは
+          ゴリラを通らないと繋がりません。中盤の進歩を扱おうとすれば、必ず罰10点を抱えることになります。</p>
+        <ul>
+          <li>ふつうの札は段の数字がそのまま失点</li>
+          <li>ゴリラとレインボーゴリラだけ罰10点</li>
+          <li>5の伝播（3大陸ぶんのゴリラ）は抱え込みで30点</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="num">03</span>
+        <h3>公開するか、伏せて粘るか</h3>
+        <p>揃った組は公開できます。公開した組は精算で0点、伏せたままなら札の点がそのまま失点。
+          ただし公開は<b>手の内を相手に教えること</b>でもあります。</p>
+        <ul>
+          <li>公開の利点は「相手に先に上がられたときの保険」だけ</li>
+          <li>残り何組かが見えると、相手は危険な札を止める</li>
+          <li>相手が近づいたと見たら公開、まだ遠いなら伏せて粘る</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="num">04</span>
+        <h3>現生人類まで登ると、点になる</h3>
+        <p>第9段の<b>現生人類</b>を組に使って上がると、1枚につき9点のボーナス。
+          伏せたままなら9点の失点になる札なので、ちょうど裏返る形です。</p>
+        <ul>
+          <li>系譜 7-8-9 で +9点</li>
+          <li>9の伝播（3大陸ぶん）で +27点</li>
+          <li>レインボーが9の代わりを務めた場合は数えません</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="howto">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">あそびかた</p>
+      <h2>1枚引いて、1枚捨てる。</h2>
+      <p>ポン・チーにあたる割り込みはありません。相手の手番中にできることは一切ないので、
+        自分の番に何を引いて何を捨てるかだけを考えます。</p>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <span class="num">01</span>
+        <h3>山札か、捨て札か</h3>
+        <p>どちらから引いてもかまいません。ただし<b>捨て札を拾った手番は山札が減りません</b>。
+          拾うほど局が延びるので、急ぐか粘るかが山札の残り枚数に直結します。</p>
+      </div>
+      <div class="card">
+        <span class="num">02</span>
+        <h3>「ゴリラ！」は、実質のロン</h3>
+        <p>2人なので、自分の手番に置かれている捨て札は必ず相手が直前に捨てた札です。
+          つまり<b>それを拾って上がれば実質のロン</b>。山札から引いて上がれば「ツモ」です。</p>
+      </div>
+      <div class="card">
+        <span class="num">03</span>
+        <h3>ゴリラ宣言で、切り上げる</h3>
+        <p>3組そろう前でも、<b>2組 ＋ 出すゴリラ1枚 ＋ 残り2枚が10点未満</b>なら局を終わらせられます。
+          得点は相手の伏せ札との差だけ。取り分は小さい代わりに、相手が仕上げる前に終わります。</p>
+      </div>
+      <div class="card">
+        <span class="num">04</span>
+        <h3>精算</h3>
+        <p>上がられた側は伏せ札の合計点を相手に献上します。山札が尽きたら強制精算で、
+          伏せ札の少ない方がその差を得点。先に100点に届いた方の勝ちです。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="make" class="night">
+  <div class="wrap night-grid">
+    <div>
+      <p class="eyebrow">つくり</p>
+      <h2>HTML / CSS / JavaScript だけ。</h2>
+      <p>フレームワークもビルドも使っていません。<code>app/index.html</code> を開けばそのまま動きます。
+        題はジャレド・ダイアモンド『若い読者のための第三のチンパンジー』のもじりで、
+        リポジトリ名はニシゴリラの学名 <em>Gorilla gorilla gorilla</em> から——ちょうどゴリラが3つ並びます。</p>
+    </div>
+    <div class="night-list">
+      <div class="night-item"><b>組の 分解</b><span>手の内を「最大数の組 → 最小の失点」で全探索します。レインボーは1組1枚までの代替として候補に混ぜます。</span></div>
+      <div class="night-item"><b>相手の 思考</b><span>拾いの損得、公開すべきかのリスク見積もり、そして「あなたがどの札を拾ったか」から推し量った危険度で捨て札を選びます。</span></div>
+      <div class="night-item"><b>札の 絵</b><span>画像生成AIに3×3のグリッドで描かせ、<code>tools/split_grid.py</code> で切り分け・背景透過しています。大陸は色帯で表すので絵は9枚で足ります。</span></div>
+      <div class="night-item"><b>ルールの 仕様</b><span><code>RULES.md</code> に、札・手番・上がり・精算を数値と条件で書いてあります。</span></div>
+      <div class="night-item"><b>保存</b><span>何も保存しません。サーバーにも何も送りません。</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="faq">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">よくある質問</p>
+      <h2>気になるところ</h2>
+    </div>
+    <details open><summary>お金は かかりますか？</summary><p>かかりません。無料で、広告も課金もありません。</p></details>
+    <details><summary>インストールは 必要ですか？</summary><p>不要です。ブラウザで開くだけで遊べます。</p></details>
+    <details><summary>データは どこかに 送られますか？</summary><p>送られません。得点も設定も、その場かぎりで保存すらしていません。</p></details>
+    <details><summary>原作のカードゲームを 持っていないと 遊べませんか？</summary><p>いりません。これは原作とはルールの異なる別のゲームです。</p></details>
+    <details><summary>なぜ 第5段が ゴリラなのですか？</summary><p>進歩の道の真ん中にゴリラを置くと、中盤の系譜が必ずゴリラを通ることになります。どれだけ段を登ってもゴリラは抜けない、という原作の主題が、そのまま確率の構造になるからです。</p></details>
+    <details><summary>ゴリラを 抱えたままだと 損ですか？</summary><p>損です。伏せたまま終われば罰10点。ただしゴリラ宣言に使って場に出せば、その1枚は失点に数えません。抱えれば重荷、出せば切り札という札です。</p></details>
+    <details><summary>2人で 対戦できますか？</summary><p>いまはCPU対戦のみです。むずかしさは やさしい／ふつう／ゴリラ級 の3段階あります。</p></details>
+    <details><summary>原作は どこで 買えますか？</summary><p>アナログ版は、いそのたかみ氏（鷹巣堂）がゲームマーケット2020春で発表したカードゲーム「第三のゴリラ」です。くわしくは<a href="https://isonotakami.hatenadiary.jp/archive/category/%E7%AC%AC%E4%B8%89%E3%81%AE%E3%82%B4%E3%83%AA%E3%83%A9" target="_blank" rel="noopener">鷹巣堂のブログ</a>をご覧ください。</p></details>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <h2>38枚は、もう配られています。</h2>
+    <div class="hero-actions">
+      <a class="btn btn-main" href="app/">いますぐ あそぶ</a>
+      <a class="btn btn-sub" href="https://github.com/pikaring/gorilla-gorilla-gorilla">GitHubで見る</a>
+    </div>
+  </div>
+</section>
+
+<section class="family" id="family">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">MORE TOOLS</p>
+      <h2>同じ作者の、ほかのツール。</h2>
+      <p>ブラウザだけで動く道具とゲームを、ひとつのページにまとめています。</p>
+    </div>
+    <div class="hero-actions">
+      <a class="btn btn-main" href="https://pikaring.github.io/">つくったもの一覧を見る</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <span>若い類人猿のための第三のゴリラ</span>
+    <a href="https://github.com/pikaring/gorilla-gorilla-gorilla">GitHub</a>
+    <a href="https://github.com/pikaring/gorilla-gorilla-gorilla/blob/main/README.md">README</a>
+    <span class="counter">累計アクセス <b id="counter-value">―</b> 回</span>
+    <span class="sep">MIT License · pikaring · 依存ライブラリなし</span>
+    <span class="disclosure">原作：いそのたかみ（鷹巣堂）「第三のゴリラ」（ゲームマーケット2020春）。本ページはブログ記事の情報をもとに、2人用の集め役ゲームとして組み直したファンメイドのブラウザ版です。</span>
+    <span class="disclosure">当サイトはAmazonアソシエイト・プログラムに参加しており、掲載しているリンクから商品が買われると運営者に紹介料が入る場合があります。</span>
+  </div>
+</footer>
 
 <script>
-  /* img/5.png があれば見本札も絵に差し替える */
-  (function(){
-    var t = new Image();
-    t.onload = function(){
-      document.querySelectorAll(".card[data-art]").forEach(function(el){
-        var img = document.createElement("img");
-        img.className = "art"; img.alt = ""; img.src = "img/" + el.dataset.art + ".png";
-        img.addEventListener("error", function(){ el.classList.remove("arton"); img.remove(); });
-        el.classList.add("arton");
-        el.insertBefore(img, el.querySelector("s.stage"));
-      });
-    };
-    t.src = "img/5.png";
-  })();
+// アクセスカウンター（ほかのページと同じGAS。page名でサイトごとに別カウント）
+(function () {
+  var el = document.getElementById('counter-value');
+  if (!el) return;
+  var page = location.pathname.replace(/index\.html$/, '');
+  fetch('https://script.google.com/macros/s/AKfycbxkQLZXNAFXkT7zhIO0TmMDGU3A0TQ234Lf-yhw5J7lvFAjCi3KLNLRd_LKd_xlOxPd/exec?page=' + encodeURIComponent(page))
+    .then(function (r) { return r.json(); })
+    .then(function (d) { el.textContent = Number(d.count).toLocaleString('ja-JP'); })
+    .catch(function () { el.textContent = '―'; });
+})();
+</script>
+<script>
+// Amazon Creators API で取った商品情報（tools/fetch_goods.py が assets/goods.json に書く）。
+// 取れていれば画像と価格を足し、無ければテキストカードのまま。
+(function () {
+  var cards = document.querySelectorAll('.good[data-asin]');
+  if (!cards.length) return;
+  fetch('assets/goods.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (d) {
+    var at = new Date(d.fetchedAt);
+    var stamp = isNaN(at) ? '' : (at.getMonth() + 1) + '/' + at.getDate() + '時点';
+    cards.forEach(function (c) {
+      var it = d.items && d.items[c.dataset.asin];
+      if (!it) return;
+      if (it.image) {
+        var img = document.createElement('img');
+        img.className = 'gimg'; img.src = it.image; img.alt = ''; img.loading = 'lazy';
+        c.insertBefore(img, c.firstChild);
+      }
+      if (it.price) {
+        var p = document.createElement('p');
+        p.className = 'gprice';
+        p.innerHTML = it.price + (stamp ? ' <small>' + stamp + '</small>' : '');
+        var link = c.querySelector('.glink');
+        c.insertBefore(p, link);
+      }
+      if (it.url) { var a = c.querySelector('.glink'); if (a) a.href = it.url; }
+    });
+  }).catch(function () { /* 取れなければ何もしない */ });
+})();
 </script>
 </body>
 </html>

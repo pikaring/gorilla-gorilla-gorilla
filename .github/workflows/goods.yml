@@ -1,0 +1,43 @@
+name: goods
+
+# Amazon Creators API で商品情報（画像・価格）を取り直し、変わっていればコミットする。
+# 認証情報は Settings > Secrets の CREATORS_CLIENT_ID / CREATORS_CLIENT_SECRET。
+# まだ登録していないあいだは、失敗させずに何もしない（紹介ページはテキストのカードのまま動く）。
+
+on:
+  schedule:
+    - cron: '0 18 * * *'   # 毎日 03:00 JST
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    env:
+      CREATORS_CLIENT_ID: ${{ secrets.CREATORS_CLIENT_ID }}
+      CREATORS_CLIENT_SECRET: ${{ secrets.CREATORS_CLIENT_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 認証情報が まだ ないときは 何もしない
+        if: env.CREATORS_CLIENT_ID == '' || env.CREATORS_CLIENT_SECRET == ''
+        run: |
+          echo "CREATORS_CLIENT_ID / CREATORS_CLIENT_SECRET が未設定のため、今回は何もしません。" >> "$GITHUB_STEP_SUMMARY"
+          echo "登録すると、次回から 画像と価格を とりなおします。" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fetch from Creators API
+        if: env.CREATORS_CLIENT_ID != '' && env.CREATORS_CLIENT_SECRET != ''
+        run: python tools/fetch_goods.py --html index.html --out assets/goods.json
+
+      - name: Commit if changed
+        if: env.CREATORS_CLIENT_ID != '' && env.CREATORS_CLIENT_SECRET != ''
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/goods.json
+          git diff --cached --quiet && echo "変更なし" || (git commit -m "goods.json を更新（Creators API）" && git push)

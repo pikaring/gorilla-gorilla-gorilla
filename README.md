@@ -14,13 +14,27 @@
 
 ## 構成
 
-    RULES.md              ルール仕様（他のAIや再実装者向けの正確な記述）
-    assets/icon.png       ポータル（pikaring.github.io）のカード用アイコン
-    index.html            紹介ページ
-    app/index.html        ゲーム本体（単体で動く）
-    img/                  札の絵。1.png〜9.png を置くと自動で切り替わる
-    img/PROMPT.md         絵を作るためのプロンプト（3x3グリッドで一度に出させる）
-    tools/split_grid.py   そのグリッド画像を 1.png〜9.png に切り分ける
+    index.html                 紹介ページ（ツール群共通の作り）
+    app/index.html             ゲーム本体（単体で動く）
+    assets/site.css            共通デザイン。アクセントだけ熟れたバナナの琥珀色
+    assets/icon.png            ポータルのカード用・OG用アイコン
+    assets/favicon.png         ファビコン
+    assets/goods.json          本の画像と価格（ワークフローが毎日更新）
+    img/                       札の絵。1.png〜9.png
+    img/PROMPT.md              絵を作るためのプロンプト（3x3グリッドで一度に出させる）
+    tools/split_grid.py        そのグリッド画像を 1.png〜9.png に切り分ける
+    tools/fetch_goods.py       Amazon Creators API で本の画像と価格を取る
+    .github/workflows/goods.yml 上を毎日3:00 JSTに実行する
+    RULES.md                   ルール仕様（他のAIや再実装者向けの正確な記述）
+    sitemap.xml                紹介ページと app/ の2本
+
+紹介ページは `guns-germs-and-diamond/CLAUDE.md` に書かれた
+ツール群共通の規約に従っている（節の並び、アクセスカウンター、
+アソシエイト表示、OG、JSON-LD、GA4）。
+
+`assets/goods.json` を更新するワークフローには、リポジトリの Secrets に
+`CREATORS_CLIENT_ID` / `CREATORS_CLIENT_SECRET` が要る。
+未登録のあいだは何もせず、本のカードは文字のまま表示される。
 
 ## 札 — 38枚
 
