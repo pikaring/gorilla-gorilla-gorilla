@@ -15,6 +15,7 @@
 ## 構成
 
     RULES.md              ルール仕様（他のAIや再実装者向けの正確な記述）
+    assets/icon.png       ポータル（pikaring.github.io）のカード用アイコン
     index.html            紹介ページ
     app/index.html        ゲーム本体（単体で動く）
     img/                  札の絵。1.png〜9.png を置くと自動で切り替わる
