@@ -1,0 +1,960 @@
+<title>若い類人猿のための第三のゴリラ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Antique&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+  :root{
+    --bg:#151917; --bg2:#101413; --panel:#1E2422; --panel2:#28302D;
+    --line:#39423E; --line2:#4C5651;
+    --fg:#E6E1D4; --muted:#96A09A;
+    --bone:#E9E2D2; --bone2:#D3CBB8; --ink:#14100C;
+    --af:#C25A3C; --eu:#3F72A6; --am:#5E9150; --oc:#8E6DAE;
+    --banana:#F2C238; --alarm:#D9534F; --ok:#6FA96B;
+    --disp:"Zen Antique","Hiragino Mincho ProN","Yu Mincho",serif;
+    --body:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--fg); font-family:var(--body); font-size:15px; line-height:1.5;
+    -webkit-text-size-adjust:100%;
+    background-image:radial-gradient(120% 70% at 50% -10%, #232b28 0%, rgba(21,25,23,0) 60%)}
+  .wrap{max-width:1000px; margin:0 auto; padding-inline:16px; padding-block:10px 16px;
+    display:flex; flex-direction:column; gap:9px}
+
+  /* ── 細い操作帯（タイトルは紹介ページへ逃がした） ── */
+  .bar{display:flex; flex-wrap:wrap; gap:7px; align-items:center}
+  .bar .spacer{flex:1 1 auto}
+  .chip{font-family:var(--mono); font-size:11px; letter-spacing:.05em; color:var(--muted);
+    background:var(--panel); border:1px solid var(--line); border-radius:3px; padding:3px 8px;
+    display:flex; gap:5px; align-items:center}
+  .chip b{color:var(--fg); font-weight:600; font-variant-numeric:tabular-nums}
+  select,.btn{font-family:var(--body); font-size:12px; color:var(--fg); background:var(--panel2);
+    border:1px solid var(--line2); border-radius:3px; padding:4px 9px; cursor:pointer}
+  select{padding:3px 4px; background:transparent; border:none; color:var(--banana); font-weight:500}
+  .btn:hover{background:var(--line)}
+  .btn:focus-visible, select:focus-visible, .card:focus-visible{outline:2px solid var(--banana); outline-offset:2px}
+  .home{color:var(--muted); font-size:12px; text-decoration:none; border-bottom:1px solid var(--line2); padding-bottom:1px}
+  .home:hover{color:var(--banana); border-color:var(--banana)}
+
+  /* ── 対戦者の列（公開組を同じ行に畳んだ） ── */
+  .side{display:flex; gap:12px; align-items:center; flex-wrap:wrap; min-height:79px;
+    background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:7px 11px}
+  .side.active{border-color:var(--banana); box-shadow:inset 0 0 0 1px rgba(242,194,56,.22)}
+  .sideinfo{display:flex; gap:10px; align-items:center; flex-wrap:wrap; min-width:150px}
+  .who{font-family:var(--disp); font-size:15px; letter-spacing:.08em; color:var(--bone)}
+  .stat{font-family:var(--mono); font-size:10.5px; color:var(--muted); display:flex; gap:4px; align-items:baseline}
+  .stat b{font-size:14px; color:var(--fg); font-variant-numeric:tabular-nums}
+  .stat.pen b{color:var(--alarm)}
+  .backfan{display:flex}
+  .backfan i{display:block;width:11px;height:17px;border-radius:2px;background-color:#2B3330;
+    box-shadow:inset 0 0 0 1px #434D48; margin-left:-4px}
+  .backfan i:first-child{margin-left:0}
+  .melds{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+  .meldset{display:flex; gap:2px; padding:3px; border:1px dashed var(--line2); border-radius:4px; background:rgba(255,255,255,.02)}
+  .meldset .mlabel{writing-mode:vertical-rl; font-size:8.5px; letter-spacing:.06em; color:var(--muted); align-self:center; padding:0 1px}
+  .noneyet{font-size:11.5px; color:var(--line2)}
+
+  /* ── 場：枚数は山札の左／捨て札の右 ── */
+  .tablerow{display:flex; gap:18px; align-items:center; flex-wrap:wrap; justify-content:center;
+    background:var(--bg2); border:1px solid var(--line); border-radius:4px; padding:10px 14px}
+  .pile{display:flex; gap:9px; align-items:center}
+  .pcap{display:flex; flex-direction:column; gap:1px; font-family:var(--mono); font-size:10px; line-height:1.25}
+  .pcap span{color:var(--muted); letter-spacing:.14em}
+  .pcap b{color:var(--fg); font-size:13px; font-variant-numeric:tabular-nums; font-weight:600}
+  .pcap.toleft{align-items:flex-end; text-align:right}
+  .pcap.toright{align-items:flex-start; text-align:left}
+  .deckback{width:66px;height:93px;border-radius:4px;background-color:#2B3330;box-shadow:inset 0 0 0 1px #434D48;
+    display:grid;place-items:center}
+  .deckback.low{box-shadow:inset 0 0 0 1px var(--alarm)}
+  .emptyslot{width:66px;height:93px;border-radius:4px;border:1px dashed var(--line2);display:grid;place-items:center;
+    font-size:11px;color:var(--line2)}
+  .recent{display:flex; gap:3px; align-items:center; padding-left:6px; border-left:1px solid var(--line)}
+  .recent .card{opacity:.4}
+
+  /* ── 札 ── */
+  .card{position:relative; width:66px; height:93px; flex:none; border-radius:4px; border:none;
+    background:var(--bone); color:var(--ink); padding:0; cursor:default; font-family:var(--body);
+    display:flex; flex-direction:column; overflow:hidden; text-align:left;
+    box-shadow:0 2px 0 rgba(0,0,0,.45), 0 5px 12px rgba(0,0,0,.3)}
+  .card .band{height:6px; flex:none}
+  .card .num{font-family:var(--disp); font-size:29px; line-height:1; padding:6px 0 0 7px; letter-spacing:-.02em}
+  .card .cont{font-size:8px; letter-spacing:.06em; padding:0 7px; margin-top:2px; font-weight:700}
+  .card .stage{font-size:8.5px; line-height:1.3; letter-spacing:-.03em; padding:0 6px; margin-top:auto; margin-bottom:5px; color:#3A332B; font-weight:500}
+  .card .pen{position:absolute; right:4px; top:11px; font-family:var(--mono); font-size:8.5px; font-weight:600;
+    color:var(--ink); background:var(--banana); border-radius:2px; padding:0 3px}
+  .card .apeart{position:absolute; right:4px; bottom:19px; opacity:.85}
+  /* 絵札 — img/1.png … img/9.png を置くと自動で切り替わる */
+  .card .art{display:block; width:100%; height:38px; object-fit:contain; margin-top:1px;
+    mix-blend-mode:multiply; pointer-events:none}
+  .card.arton .band{height:12px}
+  /* 絵にすると大陸名の行が消えるので、色帯の中に入れて残す */
+  .card.arton .cont{position:absolute; top:0; left:0; right:0; height:12px; line-height:12px;
+    margin:0; padding:0 6px; font-size:7px; letter-spacing:.04em;
+    color:rgba(255,255,255,.95)!important; text-align:center}
+  .card.sm.arton .cont{display:none}
+  .card.arton .apeart{display:none}
+  .card.arton .num{font-size:25px; padding-top:5px}
+  .card.sm .art{height:22px}
+  .card.sm.arton .band{height:6px}
+  .card.sm.arton .num{font-size:16px; padding-top:3px}
+  .card.sm{width:42px;height:60px}
+  .card.sm .band{height:4px}
+  .card.sm .num{font-size:18px;padding:3px 0 0 5px}
+  .card.sm .cont{font-size:6.5px;padding:0 5px}
+  .card.sm .stage{font-size:7px;padding:0 4px;margin-bottom:3px}
+  .card.sm .pen{font-size:7px;top:6px;right:3px}
+  .card.sm .apeart{bottom:11px;right:2px}
+  .card.pick{cursor:pointer; transition:transform .12s ease, box-shadow .12s ease}
+  .card.pick:hover,.card.pick:focus-visible{transform:translateY(-8px); box-shadow:0 8px 0 rgba(0,0,0,.4),0 14px 24px rgba(0,0,0,.45)}
+  .card.idle{filter:brightness(.8)}
+  .card.fresh{box-shadow:0 0 0 2px var(--banana), 0 5px 12px rgba(0,0,0,.4)}
+
+  /* ── 手の内と操作 ── */
+  .hand{display:flex; gap:6px; flex-wrap:wrap; min-height:93px; align-items:flex-start}
+  .ctl{display:flex; gap:8px; flex-wrap:wrap; align-items:center; min-height:30px}
+  .ctl:empty{display:none}
+  .bigbtn{font-family:var(--body); font-size:13px; font-weight:700; letter-spacing:.06em;
+    background:var(--banana); color:var(--ink); border:none; border-radius:3px; padding:7px 15px; cursor:pointer}
+  .bigbtn:hover{filter:brightness(1.08)}
+  .bigbtn.ghost{background:transparent; color:var(--fg); border:1px solid var(--line2); font-weight:500}
+  .bigbtn.ghost:hover{background:var(--panel2); filter:none}
+  .bigbtn.win{background:var(--ok); color:#0E1410; font-family:var(--disp); font-size:16px; letter-spacing:.14em; padding:6px 19px}
+  .expbtn{display:flex; align-items:center; gap:5px; background:var(--panel2); border:1px solid var(--line2);
+    border-radius:3px; padding:3px 7px 3px 5px; cursor:pointer; font-family:var(--body); font-size:11px; color:var(--fg)}
+  .expbtn:hover{border-color:var(--banana)}
+  .expbtn .mini{display:flex; gap:2px}
+  .expbtn .mini span{width:10px;height:14px;border-radius:2px;display:block}
+  .hintline{font-size:11.5px; color:var(--muted); line-height:1.45}
+  .hintline em{color:var(--banana); font-style:normal; font-weight:500}
+  .hintline .warn{color:var(--alarm)}
+
+  .log{border-top:1px solid var(--line); padding-top:7px;
+    font-family:var(--mono); font-size:11px; line-height:1.7; color:var(--muted);
+    max-height:58px; overflow-y:auto}
+  .log div{display:flex; gap:8px}
+  .log .t{color:var(--line2); flex:none}
+  .log .you{color:#BFD8C6} .log .cpu{color:#D8C6BF}
+  .log .hot{color:var(--banana)} .log .bad{color:var(--alarm)}
+
+  /* ── モーダル ── */
+  .modal{position:fixed; inset:0; z-index:60; background:rgba(10,13,12,.9); display:grid; place-items:center; padding:20px; overflow-y:auto}
+  .sheet{background:var(--panel); border:1px solid var(--line2); border-radius:5px; max-width:580px; width:100%;
+    padding:22px; box-shadow:0 20px 60px rgba(0,0,0,.6)}
+  .sheet h2{font-family:var(--disp); font-size:21px; margin:0 0 4px; color:var(--bone); letter-spacing:.06em}
+  .sheet h3{font-family:var(--disp); font-size:15px; margin:18px 0 6px; color:var(--banana); letter-spacing:.08em}
+  .sheet p,.sheet li{font-size:13.5px; margin:6px 0; line-height:1.65}
+  .sheet ul{padding-left:1.2em; margin:6px 0}
+  .sheet .sub{color:var(--muted); font-size:12.5px; margin-top:0}
+  .ladder{display:grid; grid-template-columns:repeat(auto-fill,minmax(118px,1fr)); gap:5px; margin:8px 0}
+  .ladder div{font-size:11.5px; background:var(--panel2); border-left:2px solid var(--line2); padding:4px 8px}
+  .ladder div b{font-family:var(--mono); color:var(--banana); margin-right:6px}
+  .ladder div.ape{border-left-color:var(--banana); color:var(--banana)}
+  .result{font-family:var(--disp); font-size:29px; letter-spacing:.08em; margin:6px 0 2px}
+  .result.win{color:var(--ok)} .result.lose{color:var(--alarm)} .result.draw{color:var(--muted)}
+  .tally{display:flex; gap:10px; margin:14px 0; font-family:var(--mono)}
+  .tally div{flex:1; background:var(--panel2); border:1px solid var(--line); border-radius:3px; padding:10px; text-align:center}
+  .tally b{display:block; font-size:27px; color:var(--fg); font-variant-numeric:tabular-nums; line-height:1.2}
+  .tally span{font-size:11px; color:var(--muted); letter-spacing:.1em}
+  .deadlist{display:flex; gap:4px; flex-wrap:wrap; margin:8px 0}
+  .sheetfoot{display:flex; gap:9px; margin-top:18px; flex-wrap:wrap}
+
+  @media (max-width:560px){
+    .card{width:56px;height:80px}
+    .card .num{font-size:24px;padding:5px 0 0 6px}
+    .card .stage{font-size:7.5px;padding:0 5px}
+    .card .cont{font-size:7px;padding:0 6px}
+    .deckback,.emptyslot{width:56px;height:80px}
+    .tablerow{gap:12px}
+    .recent{display:none}
+    .side{min-height:0}
+  }
+  @media (prefers-reduced-motion:reduce){ *{animation-duration:.01ms!important; transition-duration:.01ms!important} }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="ape" viewBox="0 0 100 100">
+  <circle cx="16" cy="45" r="11.5"/><circle cx="84" cy="45" r="11.5"/>
+  <ellipse cx="50" cy="48" rx="31" ry="35"/>
+  <rect x="25" y="37" width="50" height="7" rx="3.5" fill="#17130E" opacity=".5"/>
+  <circle cx="38.5" cy="33.5" r="3.6" fill="#17130E"/><circle cx="61.5" cy="33.5" r="3.6" fill="#17130E"/>
+  <ellipse cx="50" cy="65" rx="19.5" ry="15" fill="#17130E" opacity=".28"/>
+  <ellipse cx="43.5" cy="62" rx="3.2" ry="2.4" fill="#17130E"/><ellipse cx="56.5" cy="62" rx="3.2" ry="2.4" fill="#17130E"/>
+  <path d="M40 72 Q50 78.5 60 72" fill="none" stroke="#17130E" stroke-width="2.6" stroke-linecap="round"/>
+</symbol></svg>
+
+<div class="wrap">
+  <div class="bar">
+    <span class="chip">第 <b id="handNum">1</b> 局</span>
+    <span class="chip">あなた <b id="youScore">0</b> ／ CPU <b id="cpuScore">0</b></span>
+    <span class="chip">CPU <select id="diffSel" aria-label="難易度">
+      <option value="easy">やさしい</option><option value="normal" selected>ふつう</option><option value="hard">ゴリラ級</option>
+    </select></span>
+    <span class="spacer"></span>
+    <a class="home" href="../index.html">紹介ページ</a>
+    <button class="btn" id="rulesBtn">あそびかた</button>
+    <button class="btn" id="resetBtn">最初から</button>
+  </div>
+
+  <section class="side" id="seatCpu">
+    <div class="sideinfo">
+      <span class="who">CPU</span>
+      <span class="stat">手の内 <b id="cpuCount">9</b></span>
+      <span class="backfan" id="cpuFan" aria-hidden="true"></span>
+    </div>
+    <div class="melds" id="cpuMelds"></div>
+  </section>
+
+  <div class="tablerow">
+    <div class="pile">
+      <div class="pcap toleft"><span>山札</span><b id="deckCount">0枚</b></div>
+      <div id="deckSlot"></div>
+    </div>
+    <div class="pile">
+      <div id="discardSlot"></div>
+      <div class="pcap toright"><span>捨て札</span><b id="discardCount">0枚</b></div>
+    </div>
+    <div class="recent" id="recent"></div>
+  </div>
+
+  <section class="side" id="seatYou">
+    <div class="sideinfo">
+      <span class="who">あなた</span>
+      <span class="stat">手の内 <b id="youCount">9</b></span>
+      <span class="stat pen">伏せ失点 <b id="youDead">0</b></span>
+    </div>
+    <div class="melds" id="youMelds"></div>
+  </section>
+
+  <div class="hand" id="hand"></div>
+  <div class="ctl" id="exposebar"></div>
+  <div class="ctl" id="actions"></div>
+  <div class="hintline" id="hint"></div>
+  <div class="log" id="log" aria-live="polite"></div>
+</div>
+<div class="modal" id="modal" hidden><div class="sheet" id="sheet"></div></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ══ 定数 ══════════════════════════════════════════════ */
+var CONT = {
+  af:{name:"アフリカ",   hex:"#C25A3C"},
+  eu:{name:"ユーラシア", hex:"#3F72A6"},
+  am:{name:"アメリカ",   hex:"#5E9150"},
+  oc:{name:"オセアニア", hex:"#8E6DAE"}
+};
+var CIDS = ["af","eu","am","oc"];
+var STAGE = ["","樹上のサル","火のボノボ","直立二足歩行","石器","ゴリラ","言語","農耕","文字と都市","現生人類"];
+var APE_RANK = 5;      // ゴリラが座る段
+var APE_PEN  = 10;     // ゴリラの罰点
+var GOAL     = 100;    // この点に達したら勝ち
+var RAINBOW  = "linear-gradient(90deg,#C25A3C 0 25%,#3F72A6 25% 50%,#5E9150 50% 75%,#8E6DAE 75% 100%)";
+
+var DIFF = {
+  easy:   {label:"やさしい", danger:0.0, noise:5.0, exposeEarly:0.30, look:0.35},
+  normal: {label:"ふつう",   danger:0.9, noise:2.0, exposeEarly:0.08, look:0.75},
+  hard:   {label:"ゴリラ級", danger:1.7, noise:0.4, exposeEarly:0.00, look:1.00}
+};
+
+/* 絵札。img/5.png の有無だけ見て、あれば全札を絵に差し替える。
+   レインボーゴリラもゴリラなので 5 の絵を共用する。 */
+var ART_DIR = "../img/", ART_EXT = ".png", ART_ON = false;
+function artSrc(c){ return ART_DIR + (c.kind === "rainbow" ? 5 : c.n) + ART_EXT; }
+
+var G = null, uid = 0, timers = [];
+function later(fn,ms){ var t=setTimeout(fn,ms); timers.push(t); return t; }
+function clearTimers(){ timers.forEach(clearTimeout); timers=[]; }
+function $(id){ return document.getElementById(id); }
+function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t; } return a; }
+
+/* ══ 札 ════════════════════════════════════════════════ */
+function isApe(c){ return c.kind === "ape" || c.kind === "rainbow"; }
+function points(c){ return isApe(c) ? APE_PEN : c.n; }
+
+function buildDeck(){
+  var d = [];
+  CIDS.forEach(function(col){
+    for (var n=1;n<=9;n++){
+      d.push({ id:++uid, kind:(n===APE_RANK ? "ape" : "num"), color:col, n:n });
+    }
+  });
+  d.push({ id:++uid, kind:"rainbow", color:null, n:null });
+  d.push({ id:++uid, kind:"rainbow", color:null, n:null });
+  return shuffle(d);
+}
+
+/* ══ 組の探索 ══════════════════════════════════════════
+   系譜 = 同じ大陸の連続する3段階 ／ 伝播 = 異なる3大陸の同じ段階
+   レインボーは1組につき1枚までオールマイティに使える           */
+function comb2(a){ var o=[],i,j; for(i=0;i<a.length;i++) for(j=i+1;j<a.length;j++) o.push([a[i],a[j]]); return o; }
+function comb3(a){ var o=[],i,j,k; for(i=0;i<a.length;i++) for(j=i+1;j<a.length;j++) for(k=j+1;k<a.length;k++) o.push([a[i],a[j],a[k]]); return o; }
+
+function findMelds(cards){
+  var out = [];
+  var wilds = cards.filter(function(c){ return c.kind==="rainbow"; });
+  var real  = cards.filter(function(c){ return c.kind!=="rainbow"; });
+  function at(col,n){
+    for (var i=0;i<real.length;i++) if (real[i].color===col && real[i].n===n) return real[i];
+    return null;
+  }
+  CIDS.forEach(function(col){
+    for (var s=1;s<=7;s++){
+      var got = [at(col,s), at(col,s+1), at(col,s+2)].filter(Boolean);
+      if (got.length===3){
+        out.push({type:"line", color:col, start:s, cards:got, wild:0});
+      } else if (got.length===2){
+        wilds.forEach(function(w){ out.push({type:"line", color:col, start:s, cards:got.concat([w]), wild:1}); });
+      }
+    }
+  });
+  for (var n=1;n<=9;n++){
+    var cs = real.filter(function(c){ return c.n===n; });
+    comb3(cs).forEach(function(t){ out.push({type:"spread", n:n, cards:t, wild:0}); });
+    comb2(cs).forEach(function(t){
+      wilds.forEach(function(w){ out.push({type:"spread", n:n, cards:t.concat([w]), wild:1}); });
+    });
+  }
+  return out;
+}
+
+function deadOf(cards){ var s=0; cards.forEach(function(c){ s+=points(c); }); return s; }
+
+/* 手の内を「最大数の組 → 最小の失点」で分解する */
+function bestPartition(cards, maxMelds){
+  if (maxMelds === undefined) maxMelds = 3;
+  var melds = findMelds(cards);
+  var best = { melds:[], dead:deadOf(cards), rest:cards.slice() };
+  var used = {};
+  function rec(start, chosen){
+    if (chosen.length){
+      var rest = cards.filter(function(c){ return !used[c.id]; });
+      var d = deadOf(rest);
+      if (chosen.length > best.melds.length || (chosen.length === best.melds.length && d < best.dead)){
+        best = { melds:chosen.slice(), dead:d, rest:rest };
+      }
+    }
+    if (chosen.length >= maxMelds) return;
+    for (var i=start;i<melds.length;i++){
+      var m = melds[i], ok = true;
+      for (var k=0;k<3;k++) if (used[m.cards[k].id]) { ok=false; break; }
+      if (!ok) continue;
+      m.cards.forEach(function(c){ used[c.id]=true; });
+      chosen.push(m);
+      rec(i+1, chosen);
+      chosen.pop();
+      m.cards.forEach(function(c){ used[c.id]=false; });
+    }
+  }
+  rec(0, []);
+  return best;
+}
+
+/* 1枚捨てれば上がれるか。戻り値は {discard, melds} または null */
+function winOption(hand, exposed){
+  var need = 3 - exposed;
+  if (need <= 0) return null;
+  if (hand.length !== need*3 + 1) return null;
+  for (var i=0;i<hand.length;i++){
+    var rest = hand.slice(0,i).concat(hand.slice(i+1));
+    var p = bestPartition(rest, need);
+    if (p.melds.length === need && p.dead === 0) return { discard:hand[i], melds:p.melds };
+  }
+  return null;
+}
+
+/* 伏せたまま晒せる組（レインボーを含まないもの）を列挙 */
+function exposableMelds(hand, exposed){
+  if (exposed >= 3) return [];
+  var seen = {}, out = [];
+  findMelds(hand).forEach(function(m){
+    if (m.wild) return;
+    var key = m.cards.map(function(c){ return c.id; }).sort().join("-");
+    if (seen[key]) return;
+    seen[key] = 1;
+    out.push(m);
+  });
+  return out;
+}
+
+/* ══ 局の準備 ══════════════════════════════════════════ */
+function newMatch(diff){
+  clearTimers();
+  G = { diff: diff || (G && G.diff) || "normal", hand:1, score:{you:0,cpu:0}, first:"you" };
+  startHand();
+}
+
+function startHand(){
+  clearTimers();
+  var deck = buildDeck();
+  G.you = { hand:[], melds:[] };
+  G.cpu = { hand:[], melds:[] };
+  for (var i=0;i<9;i++){ G.you.hand.push(deck.pop()); G.cpu.hand.push(deck.pop()); }
+  G.deck = deck;
+  G.discard = [ deck.pop() ];
+  G.picks = { you:[], cpu:[] };     // 捨て札から拾った札の記録（読みの材料）
+  G.cur = G.first;
+  G.phase = "draw";
+  G.drawn = null;
+  G.over = false;
+  G.log = [];
+  log("第" + G.hand + "局。" + (G.cur==="you"?"あなた":"CPU") + "の先手。", "hot");
+  render();
+  if (G.cur === "cpu") later(cpuTurn, 900);
+}
+
+function log(t,c){ G.log.push({t:t,c:c||""}); if (G.log.length>60) G.log.shift(); }
+function nameOf(w){ return w==="you" ? "あなた" : "CPU"; }
+function other(w){ return w==="you" ? "cpu" : "you"; }
+function cardName(c){
+  if (c.kind === "rainbow") return "レインボーゴリラ";
+  if (c.kind === "ape") return CONT[c.color].name + "のゴリラ";
+  return CONT[c.color].name + "の" + c.n + "・" + STAGE[c.n];
+}
+function meldName(m){
+  if (m.type === "line") return CONT[m.color].name + " " + m.start + "-" + (m.start+1) + "-" + (m.start+2);
+  return "伝播 " + m.n;
+}
+
+/* ══ 札の描画 ══════════════════════════════════════════ */
+function cardNode(card, opt){
+  opt = opt || {};
+  var el = document.createElement(opt.click ? "button" : "div");
+  el.className = "card" + (opt.sm ? " sm" : "");
+  if (opt.click){ el.type = "button"; el.classList.add("pick"); el.addEventListener("click", opt.click); }
+  if (opt.idle) el.classList.add("idle");
+  if (opt.fresh) el.classList.add("fresh");
+
+  var band = document.createElement("div");
+  band.className = "band";
+  band.style.background = card.kind === "rainbow" ? RAINBOW : CONT[card.color].hex;
+  el.appendChild(band);
+
+  var num = document.createElement("div");
+  num.className = "num";
+  num.textContent = card.kind === "rainbow" ? "★" : card.n;
+  el.appendChild(num);
+
+  var cont = document.createElement("div");
+  cont.className = "cont";
+  if (card.kind === "rainbow"){ cont.textContent = "レインボー"; cont.style.color = "#8E6DAE"; }
+  else { cont.textContent = CONT[card.color].name; cont.style.color = CONT[card.color].hex; }
+  el.appendChild(cont);
+
+  if (ART_ON){
+    el.classList.add("arton");
+    var art = document.createElement("img");
+    art.className = "art"; art.alt = ""; art.src = artSrc(card);
+    art.addEventListener("error", function(){ el.classList.remove("arton"); art.remove(); });
+    el.appendChild(art);
+  }
+
+  var st = document.createElement("div");
+  st.className = "stage";
+  st.textContent = card.kind === "rainbow" ? "萬能" : STAGE[card.n];
+  el.appendChild(st);
+
+  if (isApe(card)){
+    var pen = document.createElement("span");
+    pen.className = "pen"; pen.textContent = "罰" + APE_PEN;
+    el.appendChild(pen);
+    var art = document.createElement("span");
+    art.className = "apeart";
+    art.innerHTML = '<svg width="' + (opt.sm?16:24) + '" height="' + (opt.sm?16:24) + '" fill="#8C8474"><use href="#ape"/></svg>';
+    el.appendChild(art);
+  }
+  el.setAttribute("aria-label", cardName(card) + (isApe(card) ? "・罰" + APE_PEN + "点" : "・" + card.n + "点"));
+  return el;
+}
+
+function meldNode(m, sm){
+  var box = document.createElement("div");
+  box.className = "meldset";
+  var lab = document.createElement("span");
+  lab.className = "mlabel";
+  lab.textContent = m.type === "line" ? "系譜" : "伝播";
+  box.appendChild(lab);
+  m.cards.forEach(function(c){ box.appendChild(cardNode(c, {sm:sm})); });
+  return box;
+}
+
+/* ══ 画面 ══════════════════════════════════════════════ */
+function sortHand(h){
+  return h.slice().sort(function(a,b){
+    if (a.kind === "rainbow") return 1;
+    if (b.kind === "rainbow") return -1;
+    if (a.color !== b.color) return CIDS.indexOf(a.color) - CIDS.indexOf(b.color);
+    return a.n - b.n;
+  });
+}
+
+function render(){
+  $("handNum").textContent = G.hand;
+  $("cpuCount").textContent = G.cpu.hand.length;
+  $("youCount").textContent = G.you.hand.length;
+  $("cpuScore").textContent = G.score.cpu;
+  $("youScore").textContent = G.score.you;
+  $("deckCount").textContent = G.deck.length + "枚";
+  $("discardCount").textContent = G.discard.length + "枚";
+  $("seatCpu").classList.toggle("active", G.cur==="cpu" && !G.over);
+  $("seatYou").classList.toggle("active", G.cur==="you" && !G.over);
+
+  var fan = $("cpuFan"); fan.innerHTML = "";
+  for (var i=0;i<G.cpu.hand.length;i++) fan.appendChild(document.createElement("i"));
+
+  var youDead = bestPartition(G.you.hand, 3 - G.you.melds.length).dead;
+  $("youDead").textContent = youDead;
+
+  renderMeldRow($("cpuMelds"), G.cpu.melds);
+  renderMeldRow($("youMelds"), G.you.melds);
+
+  // 山札と捨て札
+  var ds = $("deckSlot"); ds.innerHTML = "";
+  if (G.deck.length){
+    var db = document.createElement(G.phase==="draw" && G.cur==="you" && !G.over ? "button" : "div");
+    db.className = "deckback" + (G.deck.length <= 4 ? " low" : "");
+    db.innerHTML = '<svg width="26" height="26" fill="#4C5651"><use href="#ape"/></svg>';
+    if (db.tagName === "BUTTON"){ db.type="button"; db.style.cursor="pointer"; db.addEventListener("click", function(){ playerDraw("deck"); }); }
+    ds.appendChild(db);
+  } else {
+    var es = document.createElement("div"); es.className = "emptyslot"; es.textContent = "空"; ds.appendChild(es);
+  }
+
+  var qs = $("discardSlot"); qs.innerHTML = "";
+  var top = G.discard.length ? G.discard[G.discard.length-1] : null;
+  if (top){
+    var canTake = G.phase==="draw" && G.cur==="you" && !G.over;
+    qs.appendChild(cardNode(top, canTake ? {click:function(){ playerDraw("discard"); }} : {}));
+  } else {
+    var es2 = document.createElement("div"); es2.className="emptyslot"; es2.textContent="空"; qs.appendChild(es2);
+  }
+
+  var rec = $("recent"); rec.innerHTML = "";
+  G.discard.slice(-4, -1).forEach(function(c){ rec.appendChild(cardNode(c, {sm:true})); });
+  if (!rec.children.length){ var ph=document.createElement("span"); ph.className="noneyet"; ph.textContent="まだない"; rec.appendChild(ph); }
+
+  // 手の内
+  var hand = $("hand"); hand.innerHTML = "";
+  var canDiscard = G.cur==="you" && G.phase==="act" && !G.over;
+  sortHand(G.you.hand).forEach(function(c){
+    hand.appendChild(cardNode(c, {
+      click: canDiscard ? function(){ playerDiscard(c); } : null,
+      idle: !canDiscard,
+      fresh: G.drawn && c.id === G.drawn.id
+    }));
+  });
+
+  // 公開ボタン
+  var bar = $("exposebar"); bar.innerHTML = "";
+  if (G.cur==="you" && G.phase==="act" && !G.over){
+    exposableMelds(G.you.hand, G.you.melds.length).slice(0,8).forEach(function(m){
+      var b = document.createElement("button");
+      b.className = "expbtn"; b.type = "button";
+      var mini = document.createElement("span"); mini.className = "mini";
+      m.cards.forEach(function(c){
+        var s = document.createElement("span");
+        s.style.background = c.kind==="rainbow" ? RAINBOW : CONT[c.color].hex;
+        mini.appendChild(s);
+      });
+      b.appendChild(mini);
+      b.appendChild(document.createTextNode("公開 " + meldName(m)));
+      b.addEventListener("click", function(){ playerExpose(m); });
+      bar.appendChild(b);
+    });
+  }
+
+  // 操作と案内
+  var act = $("actions"); act.innerHTML = "";
+  var hint = $("hint"); hint.innerHTML = "";
+  if (G.over){ renderLog(); return; }
+
+  if (G.cur === "cpu"){
+    hint.textContent = "CPUの手番…";
+  } else if (G.phase === "draw"){
+    act.appendChild(mkBtn("山札から引く", "", function(){ playerDraw("deck"); }));
+    if (top) act.appendChild(mkBtn("捨て札の " + cardName(top) + " を拾う", "ghost", function(){ playerDraw("discard"); }));
+    hint.innerHTML = "山札か捨て札か、どちらから1枚引く。<em>捨て札を拾うと山札は減らない</em>ので局が延びます。";
+  } else {
+    var w = winOption(G.you.hand, G.you.melds.length);
+    if (w){
+      var lab = G.drawnFrom === "discard" ? "ゴリラ！" : "ツモ";
+      act.appendChild(mkBtn(lab, "win", function(){ declareWin("you", w); }));
+    }
+    hint.innerHTML = "捨てる札をクリック。" +
+      (G.you.melds.length < 3 ? "揃った組の公開は精算0点だが手の内が読まれる。" : "") +
+      '<span class="warn">レインボーを使った組は上がるまで公開できません。</span>';
+  }
+  renderLog();
+}
+
+function renderMeldRow(el, melds){
+  el.innerHTML = "";
+  if (!melds.length){
+    var ph = document.createElement("span"); ph.className="noneyet"; ph.textContent="公開なし";
+    el.appendChild(ph); return;
+  }
+  melds.forEach(function(m){ el.appendChild(meldNode(m, true)); });
+}
+
+function mkBtn(label, cls, fn){
+  var b = document.createElement("button");
+  b.className = "bigbtn" + (cls ? " "+cls : ""); b.type="button"; b.textContent = label;
+  b.addEventListener("click", fn); return b;
+}
+
+function renderLog(){
+  var el = $("log"); el.innerHTML = "";
+  G.log.slice(-40).forEach(function(l,i){
+    var d = document.createElement("div");
+    var t = document.createElement("span"); t.className="t"; t.textContent = String(i+1).padStart(2,"0");
+    var s = document.createElement("span"); s.className = l.c; s.textContent = l.t;
+    d.appendChild(t); d.appendChild(s); el.appendChild(d);
+  });
+  el.scrollTop = el.scrollHeight;
+}
+
+/* ══ あなたの手番 ══════════════════════════════════════ */
+function playerDraw(src){
+  if (G.over || G.cur!=="you" || G.phase!=="draw") return;
+  var c;
+  if (src === "deck"){
+    if (!G.deck.length) return;
+    c = G.deck.pop();
+    log("あなたは山札から引いた。", "you");
+  } else {
+    if (!G.discard.length) return;
+    c = G.discard.pop();
+    G.picks.you.push(c);
+    log("あなたは捨て札の " + cardName(c) + " を拾った。", "you");
+  }
+  G.you.hand.push(c);
+  G.drawn = c;
+  G.drawnFrom = src;
+  G.phase = "act";
+  render();
+}
+
+function playerExpose(m){
+  if (G.over || G.cur!=="you" || G.phase!=="act") return;
+  expose(G.you, m);
+  log("あなたが " + meldName(m) + " を公開した。", "you");
+  render();
+}
+
+function playerDiscard(c){
+  if (G.over || G.cur!=="you" || G.phase!=="act") return;
+  doDiscard(G.you, c);
+  log("あなたは " + cardName(c) + " を捨てた。", "you");
+  G.drawn = null;
+  endTurn();
+}
+
+function expose(P, m){
+  m.cards.forEach(function(c){
+    var i = P.hand.indexOf(c);
+    if (i >= 0) P.hand.splice(i,1);
+  });
+  P.melds.push(m);
+}
+function doDiscard(P, c){
+  var i = P.hand.indexOf(c);
+  if (i >= 0) P.hand.splice(i,1);
+  G.discard.push(c);
+}
+
+function endTurn(){
+  if (G.over) return;
+  if (!G.deck.length){ settleDraw(); return; }
+  G.cur = other(G.cur);
+  G.phase = "draw";
+  G.drawn = null;
+  render();
+  if (G.cur === "cpu") later(cpuTurn, 800);
+}
+
+/* ══ CPUの手番 ═════════════════════════════════════════ */
+function evalHand(cards, maxMelds){
+  var p = bestPartition(cards, maxMelds);
+  // 伏せ札のうち、あと1枚で組になりうる形に含み益をつける
+  var rest = p.rest, bonus = 0;
+  for (var i=0;i<rest.length;i++) for (var j=i+1;j<rest.length;j++){
+    var a = rest[i], b = rest[j];
+    if (a.kind==="rainbow" || b.kind==="rainbow"){ bonus += 4; continue; }
+    if (a.color===b.color && Math.abs(a.n-b.n)<=2) bonus += 3;
+    else if (a.n===b.n) bonus += 3;
+  }
+  return p.dead - Math.min(bonus, 14);
+}
+
+/* 相手が欲しがっていそうな札ほど捨てにくい */
+function danger(card){
+  var d = 0;
+  G.picks.you.forEach(function(p){
+    if (p.kind === "rainbow" || card.kind === "rainbow"){ d += 3; return; }
+    if (card.color === p.color && Math.abs(card.n - p.n) <= 2) d += 5;
+    if (card.n === p.n) d += 4;
+  });
+  G.you.melds.forEach(function(m){
+    if (m.type === "line" && card.color === m.color) d += 1;
+    if (m.type === "spread" && card.n === m.n) d += 1;
+  });
+  if (isApe(card)) d += 3;                       // 進歩の真ん中はどの系譜にも刺さる
+  if (G.you.melds.length >= 2) d += 4;           // 相手は残り1組
+  return d;
+}
+
+function cpuTurn(){
+  if (G.over || G.cur!=="cpu" || G.phase!=="draw") return;
+  var d = DIFF[G.diff];
+  var need = 3 - G.cpu.melds.length;
+  var top = G.discard.length ? G.discard[G.discard.length-1] : null;
+
+  // 拾うか引くか
+  var take = false;
+  if (top){
+    var withTop = evalHand(G.cpu.hand.concat([top]), need);
+    var base = evalHand(G.cpu.hand, need);
+    // 拾えば即上がれるなら必ず拾う
+    if (winOption(G.cpu.hand.concat([top]), G.cpu.melds.length)) take = true;
+    else take = (withTop < base - 1.5) && Math.random() < d.look + 0.2;
+  }
+  if (!take && !G.deck.length) take = !!top;
+
+  var c;
+  if (take){
+    c = G.discard.pop();
+    G.picks.cpu.push(c);
+    log("CPUが捨て札の " + cardName(c) + " を拾った。", "cpu");
+  } else {
+    c = G.deck.pop();
+    log("CPUは山札から引いた。", "cpu");
+  }
+  G.cpu.hand.push(c);
+  G.drawnFrom = take ? "discard" : "deck";
+  G.phase = "act";
+  render();
+
+  later(function(){
+    // 上がれるか
+    var w = winOption(G.cpu.hand, G.cpu.melds.length);
+    if (w){ declareWin("cpu", w); return; }
+
+    // 公開するか — 公開の唯一の利点は「相手に先に上がられたときの保険」
+    var risk = (G.you.melds.length >= 2 ? 3 : G.you.melds.length) +
+               (G.deck.length <= 6 ? 3 : 0) +
+               (G.picks.you.length >= 3 ? 1 : 0);
+    if (risk >= 3 || Math.random() < d.exposeEarly){
+      var opts = exposableMelds(G.cpu.hand, G.cpu.melds.length);
+      if (opts.length){
+        var m = opts[0];
+        expose(G.cpu, m);
+        log("CPUが " + meldName(m) + " を公開した。", "cpu");
+        render();
+      }
+    }
+
+    later(function(){
+      // 捨てる
+      var needNow = 3 - G.cpu.melds.length;
+      var bestCard = null, bestScore = Infinity;
+      G.cpu.hand.forEach(function(cand){
+        var rest = G.cpu.hand.filter(function(x){ return x !== cand; });
+        var s = evalHand(rest, needNow) + danger(cand) * d.danger + (Math.random()-0.5) * d.noise;
+        if (s < bestScore){ bestScore = s; bestCard = cand; }
+      });
+      doDiscard(G.cpu, bestCard);
+      log("CPUは " + cardName(bestCard) + " を捨てた。", "cpu");
+      G.drawn = null;
+      render();
+      later(endTurn, 500);
+    }, 420);
+  }, 620);
+}
+
+/* ══ 精算 ══════════════════════════════════════════════ */
+function declareWin(who, w){
+  if (G.over) return;
+  G.over = true;
+  clearTimers();
+  doDiscard(G[who], w.discard);
+  w.melds.forEach(function(m){ expose(G[who], m); });
+
+  var loser = other(who);
+  var lp = bestPartition(G[loser].hand, 3 - G[loser].melds.length);
+  var gained = lp.dead;
+  G.score[who] += gained;
+
+  var call = (who==="you" ? G.drawnFrom : G.drawnFrom) === "discard" ? "ゴリラ！" : "ツモ";
+  log(nameOf(who) + "が" + call + "で上がった。" + nameOf(loser) + "の伏せ札 " + gained + "点を獲得。",
+      who==="you" ? "hot" : "bad");
+  render();
+  later(function(){ showSheet({ kind:"win", winner:who, call:call, gained:gained, deadCards:lp.rest }); }, 650);
+}
+
+function settleDraw(){
+  if (G.over) return;
+  G.over = true;
+  clearTimers();
+  var yp = bestPartition(G.you.hand, 3 - G.you.melds.length);
+  var cp = bestPartition(G.cpu.hand, 3 - G.cpu.melds.length);
+  var winner = null, gained = 0;
+  if (yp.dead < cp.dead){ winner = "you"; gained = cp.dead - yp.dead; }
+  else if (cp.dead < yp.dead){ winner = "cpu"; gained = yp.dead - cp.dead; }
+  if (winner) G.score[winner] += gained;
+  log("山札が尽きて流局。あなた " + yp.dead + "点 ／ CPU " + cp.dead + "点。" +
+      (winner ? nameOf(winner) + "が差の " + gained + "点を獲得。" : "同点。"), "hot");
+  render();
+  later(function(){
+    showSheet({ kind:"draw", winner:winner, gained:gained, youDead:yp.dead, cpuDead:cp.dead,
+                youRest:yp.rest, cpuRest:cp.rest });
+  }, 550);
+}
+
+function showSheet(r){
+  var over = (G.score.you >= GOAL || G.score.cpu >= GOAL);
+  var s = $("sheet"), h = "";
+
+  if (over){
+    var win = G.score.you > G.score.cpu;
+    var tie = G.score.you === G.score.cpu;
+    h += '<h2>決着</h2>';
+    h += '<div class="result ' + (tie?"draw":(win?"win":"lose")) + '">' +
+         (tie ? "引き分け" : (win ? "あなたの勝ち" : "あなたの負け")) + '</div>';
+    if (!tie) h += '<p class="sub">' + (win ? "CPU" : "あなた") + 'は今日一日「ゴリラさん」。</p>';
+  } else if (r.kind === "win"){
+    h += '<h2>' + nameOf(r.winner) + 'の' + r.call + '</h2>';
+    h += '<p class="sub">' + nameOf(other(r.winner)) + 'の伏せ札 ' + r.gained + '点が' + nameOf(r.winner) + 'の得点に。</p>';
+  } else {
+    h += '<h2>流局</h2>';
+    h += '<p class="sub">山札が尽きたので強制精算。' +
+         (r.winner ? nameOf(r.winner) + 'が差の ' + r.gained + '点を獲得。' : '同点で動きなし。') + '</p>';
+  }
+
+  h += '<div class="tally">' +
+       '<div><span>あなた</span><b>' + G.score.you + '</b></div>' +
+       '<div><span>CPU</span><b>' + G.score.cpu + '</b></div></div>';
+  h += '<p class="sub">' + GOAL + '点に先に届いた方の勝ち。</p>';
+
+  s.innerHTML = h;
+
+  // 伏せ札の内訳を並べる
+  function deadBlock(title, cards, total){
+    if (!cards || !cards.length){
+      var p = document.createElement("p"); p.className="sub";
+      p.textContent = title + "：伏せ札なし（0点）"; return p;
+    }
+    var wrap = document.createElement("div");
+    var lab = document.createElement("p"); lab.className="sub";
+    lab.textContent = title + "：伏せたまま残った " + total + "点";
+    wrap.appendChild(lab);
+    var row = document.createElement("div"); row.className="deadlist";
+    cards.forEach(function(c){ row.appendChild(cardNode(c,{sm:true})); });
+    wrap.appendChild(row);
+    return wrap;
+  }
+  if (r.kind === "win"){
+    s.appendChild(deadBlock(nameOf(other(r.winner)) + "の伏せ札", r.deadCards, r.gained));
+  } else {
+    s.appendChild(deadBlock("あなたの伏せ札", r.youRest, r.youDead));
+    s.appendChild(deadBlock("CPUの伏せ札", r.cpuRest, r.cpuDead));
+  }
+
+  var foot = document.createElement("div");
+  foot.className = "sheetfoot";
+  var b1 = document.createElement("button");
+  b1.className = "bigbtn"; b1.type="button";
+  b1.textContent = over ? "もう一度、最初から" : "次の局へ";
+  b1.addEventListener("click", function(){
+    $("modal").hidden = true;
+    if (over) newMatch();
+    else { G.hand++; G.first = other(G.first); startHand(); }
+  });
+  var b2 = document.createElement("button");
+  b2.className = "bigbtn ghost"; b2.type="button"; b2.textContent = "盤面を見る";
+  b2.addEventListener("click", function(){ $("modal").hidden = true; });
+  foot.appendChild(b1); foot.appendChild(b2);
+  s.appendChild(foot);
+  $("modal").hidden = false;
+}
+
+/* ══ ルール ════════════════════════════════════════════ */
+function showRules(){
+  var ladder = "";
+  for (var n=1;n<=9;n++){
+    ladder += '<div' + (n===APE_RANK ? ' class="ape"' : '') + '><b>' + n + '</b>' + STAGE[n] + '</div>';
+  }
+  $("sheet").innerHTML =
+    '<h2>若い類人猿のための第三のゴリラ</h2>' +
+    '<p class="sub">進歩の段をなぞって3組を揃える、2人用の集め役ゲーム。ジャレド・ダイアモンド『若い読者のための第三のチンパンジー』に由来する。</p>' +
+
+    '<h3>札</h3>' +
+    '<p>4つの大陸 × 9つの段階＝36枚。加えて<strong>レインボーゴリラ2枚</strong>で計38枚。</p>' +
+    '<div class="ladder">' + ladder + '</div>' +
+    '<p><strong>進歩の道の真ん中、第5段にはゴリラが座っています。</strong>系譜は1つの大陸につき7通りありますが、そのうち 3-4-5／4-5-6／5-6-7 の3通りはゴリラを通らないと繋がりません。ただしゴリラは伏せたまま残すと<strong>罰' + APE_PEN + '点</strong>（他の札は段の数字がそのまま点）。</p>' +
+
+    '<h3>組</h3>' +
+    '<ul>' +
+    '<li><strong>系譜</strong> — 同じ大陸の連続する3段階（アフリカ 3-4-5）</li>' +
+    '<li><strong>伝播</strong> — 異なる3大陸の同じ段階（7が3色）</li>' +
+    '</ul>' +
+    '<p>手の内は9枚。<strong>3組9枚を揃えたら上がり</strong>です。麻雀と違って頭は要りません。</p>' +
+
+    '<h3>手番</h3>' +
+    '<p>山札か捨て札の一番上か、どちらかから1枚引いて、1枚捨てる。ポン・チーはありません。' +
+    '<strong>捨て札を拾った手番は山札が減らない</strong>ので、拾うほど局が延びます。</p>' +
+    '<p>2人なので、自分の手番が来たときの捨て札は必ず相手が直前に捨てた札です。つまり<strong>それを拾って上がれば実質のロン</strong>——そのとき叫ぶのが「ゴリラ！」。山札から引いて上がれば「ツモ」。</p>' +
+
+    '<h3>公開</h3>' +
+    '<p>揃った組は自分の手番に公開できます。<strong>公開した組は精算で0点</strong>、伏せたままだと札の点がそのまま失点になる。</p>' +
+    '<p>では常に公開すべきかというと、そうではありません。公開は<strong>手の内を相手に教える</strong>——残り何組かが見えるので、相手は危険な札を止め、こちらの上がりは遠のきます。公開の唯一の利点は<strong>相手に先に上がられたときの保険</strong>。相手が近づいたと見たら公開する、まだ遠いなら伏せて粘る。その読み合いです。</p>' +
+    '<p><strong>レインボーゴリラを使った組は、上がるまで公開できません。</strong>組は一気に埋まりますが、上がれなければその3枚は必ず失点として残る——勝負手専用の札です。1つの組に使えるのは1枚まで。</p>' +
+
+    '<h3>精算</h3>' +
+    '<ul>' +
+    '<li>上がられた側は、<strong>伏せ札の合計点</strong>を相手に献上する</li>' +
+    '<li><strong>山札が尽きたら強制精算</strong>。伏せ札が少ない方が、その差を得点する</li>' +
+    '<li>先に' + GOAL + '点に届いた方の勝ち</li>' +
+    '</ul>' +
+
+    '<div class="sheetfoot"><button class="bigbtn" id="closeBtn">盤面に戻る</button></div>';
+  $("modal").hidden = false;
+  $("closeBtn").addEventListener("click", function(){ $("modal").hidden = true; });
+}
+
+/* ══ 入力・起動 ════════════════════════════════════════ */
+$("rulesBtn").addEventListener("click", showRules);
+$("resetBtn").addEventListener("click", function(){ $("modal").hidden=true; newMatch(); });
+$("diffSel").addEventListener("change", function(){ $("modal").hidden=true; newMatch(this.value); });
+document.addEventListener("keydown", function(e){
+  if (e.key === "Escape" && !$("modal").hidden) $("modal").hidden = true;
+});
+
+/* 絵の有無を1枚だけ試す。無ければ文字だけの札のまま動く。 */
+(function probeArt(){
+  var t = new Image();
+  t.onload = function(){ ART_ON = true; if (G) render(); };
+  t.src = ART_DIR + "5" + ART_EXT;
+})();
+
+function boot(saved){
+  if (saved && saved.g && !saved.g.over){
+    G = saved.g; $("diffSel").value = G.diff; render();
+    if (G.cur === "cpu" && G.phase === "draw") later(cpuTurn, 900);
+    return;
+  }
+  newMatch();
+}
+try{
+  if (window.claude && window.claude.hot && window.claude.hot.snapshot){
+    window.claude.hot.snapshot(function(){
+      return (G && !G.over && G.cur === "you") ? {g:G} : null;
+    });
+  }
+}catch(e){}
+try{
+  if (window.claude && window.claude.hot && window.claude.hot.ready) window.claude.hot.ready(function(d){ boot(d); });
+  else boot(window.claude && window.claude.hot ? window.claude.hot.data : null);
+}catch(e){ boot(null); }
+
+})();
+</script>

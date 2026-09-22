@@ -1,0 +1,307 @@
+<title>若い類人猿のための第三のゴリラ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Antique&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+  :root{
+    --bg:#151917; --bg2:#101413; --panel:#1E2422; --panel2:#28302D;
+    --line:#39423E; --line2:#4C5651;
+    --fg:#E6E1D4; --muted:#96A09A;
+    --bone:#E9E2D2; --ink:#14100C;
+    --af:#C25A3C; --eu:#3F72A6; --am:#5E9150; --oc:#8E6DAE;
+    --banana:#F2C238; --alarm:#D9534F;
+    --disp:"Zen Antique","Hiragino Mincho ProN","Yu Mincho",serif;
+    --body:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--fg); font-family:var(--body); font-size:15px; line-height:1.75;
+    -webkit-text-size-adjust:100%;
+    background-image:radial-gradient(130% 70% at 50% -6%, #262f2b 0%, rgba(21,25,23,0) 58%)}
+  .wrap{max-width:720px; margin:0 auto; padding-inline:20px; padding-block:0 56px}
+  a{color:var(--banana)}
+
+  nav{display:flex; gap:14px; flex-wrap:wrap; align-items:center;
+    border-bottom:1px solid var(--line); padding-block:14px; margin-bottom:38px}
+  nav a{font-size:12px; color:var(--muted); text-decoration:none; letter-spacing:.06em}
+  nav a:hover{color:var(--banana)}
+  nav .spacer{flex:1 1 auto}
+  .playnav{background:var(--banana); color:var(--ink)!important; font-weight:700;
+    border-radius:3px; padding:5px 13px; letter-spacing:.1em}
+
+  header .eyebrow{font-family:var(--disp); font-size:14px; letter-spacing:.2em; color:var(--muted); margin:0}
+  header h1{font-family:var(--disp); font-size:clamp(30px,8vw,46px); letter-spacing:.06em;
+    line-height:1.24; margin:4px 0 0; color:var(--bone); text-wrap:balance}
+  .lede{font-family:var(--disp); font-size:clamp(17px,4.2vw,22px); color:var(--banana);
+    letter-spacing:.04em; margin:26px 0 0; line-height:1.6}
+  .sub{color:var(--muted); font-size:14px; margin:12px 0 0}
+
+  .cta{display:flex; gap:11px; flex-wrap:wrap; margin:30px 0 8px}
+  .play{background:var(--banana); color:var(--ink); font-weight:700; font-size:16px; letter-spacing:.12em;
+    text-decoration:none; border-radius:4px; padding:13px 30px; display:inline-block}
+  .play:hover{filter:brightness(1.08)}
+  .ghost{border:1px solid var(--line2); color:var(--fg); text-decoration:none; font-size:14px;
+    border-radius:4px; padding:13px 20px; display:inline-block}
+  .ghost:hover{background:var(--panel2)}
+  .facts{font-family:var(--mono); font-size:11.5px; color:var(--muted); letter-spacing:.08em; margin-top:6px}
+
+  section{margin-top:46px}
+  h2{font-family:var(--disp); font-size:20px; letter-spacing:.1em; color:var(--bone);
+    margin:0 0 4px; padding-bottom:9px; border-bottom:1px solid var(--line)}
+  h3{font-family:var(--disp); font-size:15px; letter-spacing:.08em; color:var(--banana); margin:22px 0 2px}
+  p{margin:10px 0}
+  ul{padding-left:1.25em; margin:10px 0}
+  li{margin:5px 0}
+  strong{color:var(--bone)}
+
+  .conts{display:flex; gap:6px; flex-wrap:wrap; margin:14px 0}
+  .conts span{font-size:11.5px; padding:3px 10px; border-radius:2px; color:var(--ink); font-weight:700; letter-spacing:.06em}
+  .ladder{display:grid; grid-template-columns:repeat(auto-fill,minmax(132px,1fr)); gap:5px; margin:14px 0}
+  .ladder div{font-size:12px; background:var(--panel2); border-left:2px solid var(--line2); padding:5px 10px; line-height:1.5}
+  .ladder div b{font-family:var(--mono); color:var(--muted); margin-right:7px}
+  .ladder div.ape{border-left-color:var(--banana); color:var(--banana); background:#272318}
+  .ladder div.ape b{color:var(--banana)}
+
+  .cards{display:flex; gap:8px; flex-wrap:wrap; margin:18px 0}
+  .card{width:74px;height:105px;border-radius:4px;background:var(--bone);color:var(--ink);
+    display:flex;flex-direction:column;overflow:hidden;position:relative;
+    box-shadow:0 2px 0 rgba(0,0,0,.45),0 6px 14px rgba(0,0,0,.3)}
+  .card i.band{height:7px;display:block}
+  .card b.num{font-family:var(--disp);font-size:32px;line-height:1;padding:7px 0 0 8px;font-weight:400}
+  .card u.cont{font-size:8.5px;letter-spacing:.06em;padding:0 8px;margin-top:2px;font-weight:700;text-decoration:none}
+  .card s.stage{font-size:9px;padding:0 7px;margin-top:auto;margin-bottom:6px;color:#3A332B;font-weight:500;text-decoration:none;letter-spacing:-.02em}
+  .card em.pen{position:absolute;right:5px;top:12px;font-family:var(--mono);font-size:9px;font-weight:600;font-style:normal;
+    color:var(--ink);background:var(--banana);border-radius:2px;padding:0 3px}
+  .caption{font-size:12px; color:var(--muted); margin-top:-4px}
+  .card img.art{display:block;width:100%;height:42px;object-fit:contain;margin-top:1px;
+    mix-blend-mode:multiply;pointer-events:none}
+  .card.arton i.band{height:13px}
+  .card.arton u.cont{position:absolute; top:0; left:0; right:0; height:13px; line-height:13px;
+    margin:0; padding:0 6px; font-size:7.5px; color:rgba(255,255,255,.95)!important; text-align:center}
+  .card.arton b.num{font-size:28px;padding-top:6px}
+
+  .book{border-left:2px solid var(--line2); padding:2px 0 2px 14px; margin:20px 0}
+  .book h3{margin:0 0 2px}
+  .book p{margin:4px 0 8px; font-size:13.5px; color:var(--fg)}
+  .book a{font-size:13px; text-decoration:none; border-bottom:1px solid rgba(242,194,56,.4)}
+  .book a:hover{border-color:var(--banana)}
+  .disclose{font-size:11.5px; color:var(--muted); line-height:1.7; margin-top:22px;
+    background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:11px 13px}
+
+  .faq dt{font-weight:700; color:var(--bone); margin-top:16px; font-size:14px}
+  .faq dd{margin:4px 0 0; color:var(--fg); font-size:14px}
+
+  footer{margin-top:54px; padding-top:18px; border-top:1px solid var(--line);
+    font-size:12px; color:var(--muted); display:flex; gap:14px; flex-wrap:wrap}
+
+  @media (max-width:520px){ nav{gap:10px} nav a{font-size:11.5px} }
+</style>
+
+<div class="wrap">
+  <nav>
+    <a href="#game">どんなゲーム</a>
+    <a href="#how">あそびかた</a>
+    <a href="#made">つくり</a>
+    <a href="#shelf">本だな</a>
+    <a href="#faq">よくある質問</a>
+    <span class="spacer"></span>
+    <a class="playnav" href="app/index.html">あそぶ</a>
+  </nav>
+
+  <header>
+    <p class="eyebrow">若い類人猿のための</p>
+    <h1>第三のゴリラ</h1>
+    <p class="lede">進歩の道の真ん中に、ゴリラが座っている。</p>
+    <p class="sub">
+      4つの大陸と9つの進歩の段でできた38枚の札から、3組を揃える2人用の対戦ゲーム。
+      ただし第5段はゴリラで、そこを通らずには歴史が繋がらない。しかも抱えたままだと罰10点。
+    </p>
+    <div class="cta">
+      <a class="play" href="app/index.html">いますぐ あそぶ</a>
+      <a class="ghost" href="https://github.com/pikaring/gorilla-gorilla-gorilla">GitHubで見る</a>
+    </div>
+    <p class="facts">無料 ／ インストール不要 ／ 通信なし ／ ブラウザだけで動く</p>
+  </header>
+
+  <section id="game">
+    <h2>どんなゲーム</h2>
+    <p>
+      札は<strong>4つの大陸</strong>と<strong>9つの進歩の段</strong>でできています。
+      同じ大陸で段を登れば「系譜」、違う大陸で同じ段が揃えば「伝播」。
+      どちらも3枚で一組です。
+    </p>
+    <div class="conts">
+      <span style="background:#C25A3C">アフリカ</span>
+      <span style="background:#3F72A6">ユーラシア</span>
+      <span style="background:#5E9150">アメリカ</span>
+      <span style="background:#8E6DAE">オセアニア</span>
+    </div>
+    <div class="ladder">
+      <div><b>1</b>樹上のサル</div>
+      <div><b>2</b>火のボノボ</div>
+      <div><b>3</b>直立二足歩行</div>
+      <div><b>4</b>石器</div>
+      <div class="ape"><b>5</b>ゴリラ ／ 罰10点</div>
+      <div><b>6</b>言語</div>
+      <div><b>7</b>農耕</div>
+      <div><b>8</b>文字と都市</div>
+      <div><b>9</b>現生人類</div>
+    </div>
+    <p>
+      系譜は1つの大陸につき7通りありますが、そのうち <strong>3-4-5／4-5-6／5-6-7 の3通りはゴリラを通らないと繋がりません</strong>。
+      中盤の進歩を扱おうとすれば、必ず罰点を抱えることになる。5の伝播——3大陸ぶんのゴリラ——に至っては30点です。
+    </p>
+    <div class="cards">
+      <div class="card" data-art="4"><i class="band" style="background:#C25A3C"></i><b class="num">4</b><u class="cont" style="color:#C25A3C">アフリカ</u><s class="stage">石器</s></div>
+      <div class="card" data-art="5"><i class="band" style="background:#C25A3C"></i><b class="num">5</b><u class="cont" style="color:#C25A3C">アフリカ</u><s class="stage">ゴリラ</s><em class="pen">罰10</em></div>
+      <div class="card" data-art="6"><i class="band" style="background:#C25A3C"></i><b class="num">6</b><u class="cont" style="color:#C25A3C">アフリカ</u><s class="stage">言語</s></div>
+      <div class="card" data-art="5"><i class="band" style="background:linear-gradient(90deg,#C25A3C 0 25%,#3F72A6 25% 50%,#5E9150 50% 75%,#8E6DAE 75% 100%)"></i><b class="num">★</b><u class="cont" style="color:#8E6DAE">レインボー</u><s class="stage">萬能</s><em class="pen">罰10</em></div>
+    </div>
+    <p class="caption">左の3枚が系譜 4-5-6。右はレインボーゴリラ——どの札の代わりにもなるが、使った組は上がるまで公開できない。</p>
+  </section>
+
+  <section id="how">
+    <h2>あそびかた</h2>
+
+    <h3>手番</h3>
+    <p>
+      手の内は9枚。山札か捨て札の一番上か、どちらかから1枚引いて、1枚捨てる。ポン・チーはありません。
+      <strong>捨て札を拾った手番は山札が減らない</strong>ので、拾うほど局が延びます。急ぐか粘るかが山札の残りに直結する。
+    </p>
+
+    <h3>上がり</h3>
+    <p>
+      3組9枚を揃えたら上がり。麻雀と違って頭は要りません。
+      2人なので、自分の手番に置かれている捨て札は必ず相手が直前に捨てた札です。
+      つまり<strong>それを拾って上がれば実質のロン</strong>——そのとき叫ぶのが「ゴリラ！」。
+      山札から引いて上がれば「ツモ」です。
+    </p>
+
+    <h3>公開</h3>
+    <p>
+      揃った組は自分の手番に公開できます。<strong>公開した組は精算で0点</strong>。伏せたままだと札の点がそのまま失点になる。
+    </p>
+    <p>
+      では常に公開すべきかというと、そうではありません。公開は<strong>手の内を相手に教える</strong>——
+      残り何組かが見えるので、相手は危険な札を止め、こちらの上がりは遠のきます。
+      公開の唯一の利点は<strong>相手に先に上がられたときの保険</strong>。
+      相手が近づいたと見たら公開する、まだ遠いなら伏せて粘る。その読み合いです。
+    </p>
+
+    <h3>精算</h3>
+    <ul>
+      <li>上がられた側は、伏せ札の合計点を相手に献上する</li>
+      <li>山札が尽きたら強制精算。伏せ札が少ない方が、その差を得点する</li>
+      <li>先に100点に届いた方の勝ち</li>
+    </ul>
+  </section>
+
+  <section id="made">
+    <h2>つくり</h2>
+    <p>
+      題は<strong>ジャレド・ダイアモンド『若い読者のための第三のチンパンジー』</strong>のもじりです。
+      もとは磯野貴巨氏が2020年に発表したカードゲーム「第三のゴリラ」——
+      ダイアモンドのその本を出発点に作られた4人用のパーティゲームでした。
+      それを2人用の集め役ゲームに組み直したのがこれです。
+    </p>
+    <p>
+      <code>gorilla-gorilla-gorilla</code> はニシゴリラの学名 <em>Gorilla gorilla gorilla</em> から。
+      ちょうどゴリラが3つ並びます。
+    </p>
+    <p>
+      対戦相手は手の内を全探索で分解し、拾いの損得、公開すべきかのリスク見積もり、
+      そして「あなたがどの札を拾ったか」から推し量った危険度をもとに捨て札を選びます。
+      難易度は<strong>やさしい／ふつう／ゴリラ級</strong>の3段階。
+    </p>
+  </section>
+
+  <section id="shelf">
+    <h2>本だな</h2>
+    <p class="sub">このゲームの下敷きになった本。</p>
+
+    <div class="book">
+      <h3>若い読者のための第三のチンパンジー</h3>
+      <p>
+        ジャレド・ダイアモンド、レベッカ・ステフォフ／秋山勝 訳、草思社文庫。
+        人間がどれだけチンパンジーに近く、そして何が違うのかを一冊にまとめたもの。
+        このゲームの題は、この本をもじったものです。
+      </p>
+      <a href="https://www.amazon.co.jp/dp/4794222807?tag=redcomet-22">Amazonで見る ↗</a>
+    </div>
+
+    <div class="book">
+      <h3>第三のチンパンジー 完全版（上）</h3>
+      <p>
+        ジャレド・ダイアモンド／長谷川眞理子・長谷川寿一 訳、日経ビジネス人文庫。
+        上の本のもとになった原典。人類を「第三のチンパンジー」と呼ぶ、その理屈のほう。
+      </p>
+      <a href="https://www.amazon.co.jp/dp/4296113003?tag=redcomet-22">Amazonで見る ↗</a>
+    </div>
+
+    <div class="book">
+      <h3>銃・病原菌・鉄（上）</h3>
+      <p>
+        ジャレド・ダイアモンド／倉骨彰 訳、草思社文庫。
+        なぜ大陸ごとに歴史の進み方が違ったのかを解く一冊。
+        このゲームで札を4つの大陸に分け、同じ段が別の大陸へ渡ることを「伝播」と呼んだのは、この本によります。
+      </p>
+      <a href="https://www.amazon.co.jp/dp/4794218788?tag=redcomet-22">Amazonで見る ↗</a>
+    </div>
+  </section>
+
+  <section id="faq" class="faq">
+    <h2>よくある質問</h2>
+    <dl>
+      <dt>原作のカードゲームを持っていないと遊べませんか？</dt>
+      <dd>いりません。これは原作とはルールの異なる別のゲームです。ブラウザだけで完結します。</dd>
+
+      <dt>スマートフォンでも遊べますか？</dt>
+      <dd>遊べます。縦画面に合わせて札の大きさが変わります。</dd>
+
+      <dt>通信していますか？</dt>
+      <dd>していません。対戦相手の思考も含めて、すべてブラウザの中で動いています。</dd>
+
+      <dt>ほかのゲームもありますか？</dt>
+      <dd>
+        同じ『銃・病原菌・鉄』から作った
+        <a href="https://pikaring.github.io/guns-germs-and-diamond/">銃・病原菌・ダイヤモンド</a>
+        があります。
+      </dd>
+
+      <dt>なぜ第5段がゴリラなのですか？</dt>
+      <dd>
+        進歩の道の真ん中にゴリラを置くと、中盤の系譜が必ずゴリラを通ることになります。
+        どれだけ段を登ってもゴリラは抜けない、という原作の主題が、そのまま確率の構造になる。
+      </dd>
+    </dl>
+  </section>
+
+  <p class="disclose">
+    当サイトはAmazonアソシエイト・プログラムに参加しており、掲載しているリンクから商品が買われると運営者に紹介料が入る場合があります。
+  </p>
+
+  <footer>
+    <span>若い類人猿のための第三のゴリラ</span>
+    <a href="app/index.html">あそぶ</a>
+    <a href="https://pikaring.github.io/guns-germs-and-diamond/">銃・病原菌・ダイヤモンド</a>
+    <a href="https://isonotakami.hatenadiary.jp/archive/category/%E7%AC%AC%E4%B8%89%E3%81%AE%E3%82%B4%E3%83%AA%E3%83%A9">原作「第三のゴリラ」</a>
+  </footer>
+</div>
+
+<script>
+  /* img/5.png があれば見本札も絵に差し替える */
+  (function(){
+    var t = new Image();
+    t.onload = function(){
+      document.querySelectorAll(".card[data-art]").forEach(function(el){
+        var img = document.createElement("img");
+        img.className = "art"; img.alt = ""; img.src = "img/" + el.dataset.art + ".png";
+        img.addEventListener("error", function(){ el.classList.remove("arton"); img.remove(); });
+        el.classList.add("arton");
+        el.insertBefore(img, el.querySelector("s.stage"));
+      });
+    };
+    t.src = "img/5.png";
+  })();
+</script>
