@@ -237,51 +237,8 @@ details p { margin-top: 12px; font-size: 15px; padding-left: 24px; }
 
 
 
-/* ========== ヒーローの画面モック（このゲーム用） ==========
-   app/index.html の 標本ケースと 札を そのまま 縮めたもの。
-   札の絵は img/1.png 〜 9.png を そのまま 使う。 */
-.screen-table {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 0;
-  gap: 0;
-  background: radial-gradient(120% 80% at 50% -5%, #2b3430 0%, #1a211e 55%, #121816 100%);
-  overflow: hidden;
-}
-.ghud {
-  display: flex; justify-content: space-between; align-items: baseline;
-  padding: 9px 10px 4px; font-size: 8.5px; color: #96a09a; letter-spacing: .04em;
-}
-.ghud b { color: #e6e1d4; font-size: 11px; font-weight: 700; }
-.gmid { display: flex; align-items: flex-start; justify-content: center; gap: 12px; padding: 4px 0 6px; }
-.gslot { text-align: center; }
-.gcap { font-size: 7.5px; color: #96a09a; line-height: 1.5; margin: 3px 0 0; letter-spacing: .06em; }
-.gcap b { color: #e6e1d4; font-size: 9px; }
-.gback { width: 34px; height: 48px; border-radius: 4px; background: #2b3330; box-shadow: inset 0 0 0 1px #434d48; }
-.ghand { display: flex; gap: 3px; justify-content: center; padding: 0 6px; }
-.gcard {
-  width: 34px; height: 48px; border-radius: 4px; background: #e9e2d2;
-  display: flex; flex-direction: column; overflow: hidden; flex: 0 0 auto; position: relative;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, .45);
-}
-.gcard .gb { display: block; height: 6px; flex: none; }
-.gcard .gn { font-size: 12px; font-weight: 700; color: #14100c; line-height: 1; padding: 3px 0 0 4px; }
-.gcard .ga { display: block; width: 100%; height: 22px; object-fit: contain; margin-top: 1px; mix-blend-mode: multiply; }
-.gcard .gs { font-size: 5.5px; color: #3a332b; line-height: 1.2; padding: 0 3px 3px; margin-top: auto; }
-.gcard .gp {
-  position: absolute; right: 2px; top: 8px; font-size: 5.5px; font-weight: 700;
-  color: #14100c; background: #f2c238; border-radius: 2px; padding: 0 2px;
-}
-.gcard.sel { box-shadow: 0 0 0 2px #f2c238, 0 1px 0 rgba(0, 0, 0, .45); }
-.ghint {
-  margin: 9px 10px 0; font-size: 7.5px; line-height: 1.7; color: #96a09a;
-  text-align: center; letter-spacing: .03em;
-}
-.gfoot { margin-top: auto; padding: 8px 8px 10px; text-align: center; }
-.gfoot b {
-  display: inline-block;
-  background: linear-gradient(180deg, #f5d068, #e0ad2c);
-  color: #3a2a06; border-radius: 8px; padding: 6px 15px; font-size: 11px;
-  box-shadow: 0 2px 0 #a87c16;
-}
+/* ========== ヒーローの画面（このゲーム用） ==========
+   手で組んだ模型ではなく、app/index.html を 390px幅で 撮った 実物。
+   撮り直すときは tools/make_screen.mjs を 走らせる。 */
+.screen-shot { padding: 0; min-height: 0; gap: 0; background: #151917; }
+.screen-shot img { display: block; width: 100%; height: auto; }
