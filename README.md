@@ -17,13 +17,14 @@
     index.html                 紹介ページ（ツール群共通の作り）
     app/index.html             ゲーム本体（単体で動く）
     assets/site.css            共通デザイン。アクセントだけ熟れたバナナの琥珀色
-    assets/icon.png            ポータルのカード用・OG用アイコン
+    assets/icon.png            ポータルのカード用・OG用アイコン（元絵 assets/icon-src.jpg から tools/make_icons.py で作る）
     assets/favicon.png         ファビコン
     assets/goods.json          本の画像と価格（ワークフローが毎日更新）
     img/                       札の絵。1.png〜9.png
     img/PROMPT.md              絵を作るためのプロンプト（3x3グリッドで一度に出させる）
     tools/split_grid.py        そのグリッド画像を 1.png〜9.png に切り分ける
     tools/fetch_goods.py       Amazon Creators API で本の画像と価格を取る
+    tools/make_icons.py        アイコンの元絵から角を丸めたアイコン（512px・64px）を作る
     .github/workflows/goods.yml 上を毎日3:00 JSTに実行する
     RULES.md                   ルール仕様（他のAIや再実装者向けの正確な記述）
     sitemap.xml                紹介ページと app/ の2本
