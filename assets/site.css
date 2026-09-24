@@ -252,3 +252,7 @@ details p { margin-top: 12px; font-size: 15px; padding-left: 24px; }
   .header .brand { font-size: 14px; letter-spacing: 0; }
   .nav .btn-main { white-space: nowrap; }
 }
+
+/* 紹介ページのバナー（Gemini で描いたイラスト） */
+.art-banner { background: #2c5837; }
+.art-banner img { display: block; width: 100%; max-width: 1376px; height: auto; margin: 0 auto; }
